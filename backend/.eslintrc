@@ -1,0 +1,15 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2017
+  },
+  "rules": {
+    "indent": [
+      "warn",
+      2
+    ],
+    "semi": [
+      "warn",
+      "always"
+    ]
+  }
+}
