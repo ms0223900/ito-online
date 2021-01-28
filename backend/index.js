@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const { MONGO_DB_CODE } = require('./config.js');
 const User = require('./src/model/User.js');
 const { getUsers } = require('./src/resolvers/user.js');
+const { emitMessage } = require('./src/socket/socket.js');
 
 
 const pubsub = new PubSub();
@@ -46,6 +47,20 @@ io.on('connection', socket => {
   socket.on('chat-message', value => {
     console.log(value);
   });
+
+  socket.on('join-room', e => {
+    console.log(e);
+    if(e && e.roomId) {
+      socket.join(e.roomId);
+      emitMessage(socket, e.roomId)();
+    }
+  }); 
+
+  socket.emit('chat-message', {
+    message: 'message from server'
+  });
+
+  emitMessage(io, 'room1')();
 });
 
 mongoose
@@ -58,7 +73,7 @@ mongoose
     });
   })
   .then(res => {
-    console.log(`Server is running at ${res.url}`);
+    res && console.log(`Server is running at ${res.url}`);
   })
   .catch(err => {
     console.log(err);
