@@ -7,10 +7,10 @@ const User = require('./src/model/User.js');
 const { getUsers } = require('./src/resolvers/user.js');
 const { emitMessage } = require('./src/socket/socket.js');
 
+const PORT = process.env.PORT || 5001;
 
 const pubsub = new PubSub();
 
-const PORT = process.env.PORT || 5001;
 
 // const server = new ApolloServer({
 //   typeDefs,
@@ -35,33 +35,91 @@ const io = require('socket.io')(server, {
 app.get('/', (req, res) => {
   res.send(`<h1>HI It's Server Side.</h1>`);
 });
-
 app.get('/users', async (req, res) => {
   const users = await getUsers();
   res.send(users);
 });
 
-io.on('connection', socket => {
-  console.log('user connected');
+const SOCKET_EVENT_KEYS = {
+  ADD_COUNT: 'add-count',
+};
 
-  socket.on('chat-message', value => {
-    console.log(value);
-  });
 
-  socket.on('join-room', e => {
-    console.log(e);
-    if(e && e.roomId) {
-      socket.join(e.roomId);
-      emitMessage(socket, e.roomId)();
+const reducers = {
+  addCount(state, payload) {
+    const {
+      roomCountList=[],
+    } = state;
+    const {
+      roomId, count
+    } = payload;
+    let newRoomCountList = [...roomCountList];
+
+    const roomCountsIndex = roomCountList.findIndex(c => c.roomId === roomId);
+
+    if(roomCountsIndex !== -1) {
+      newRoomCountList[roomCountsIndex] = {
+        ...newRoomCountList[roomCountsIndex],
+        count: newRoomCountList[roomCountsIndex].count + count,
+      };
+    } else {
+      newRoomCountList.push({
+        roomId,
+        count: 1,
+      });
     }
-  }); 
 
-  socket.emit('chat-message', {
-    message: 'message from server'
+    return ({
+      updateData: newRoomCountList[roomCountsIndex],
+      latestDataList: newRoomCountList,
+    });
+  },
+};
+
+(function() {
+  let roomCountList = [];
+
+  // 每個client端的connection是獨立的scope
+  io.on('connection', socket => {
+    console.log('user connected');
+
+    socket.on('chat-message', value => {
+      console.log(value);
+    });
+
+    socket.on('join-room', e => {
+      console.log(e);
+      if(e && e.roomId) {
+        socket.join(e.roomId);
+        emitMessage(socket, e.roomId)();
+        const roomCounts = roomCountList.find(c => c.roomId === e.roomId);
+        // const counts = roomCounts ? roomCounts.count : 0;
+        socket.emit(SOCKET_EVENT_KEYS.ADD_COUNT, roomCounts || undefined);
+      }
+    });
+
+    socket.on(SOCKET_EVENT_KEYS.ADD_COUNT, e => {
+      if(e) {
+        console.log(e);
+        const {
+          roomId, count,
+        } = e;
+        if(roomId) {
+          const newRoomCountList = reducers.addCount({ roomCountList, }, { roomId, count, });
+          roomCountList = newRoomCountList.latestDataList;
+          socket.to(roomId).emit(SOCKET_EVENT_KEYS.ADD_COUNT, newRoomCountList.updateData);
+          console.log(roomCountList);
+        }
+      }
+    });
+
+    socket.emit('chat-message', {
+      message: 'message from server'
+    });
+
+    emitMessage(io, 'room1')();
   });
-
-  emitMessage(io, 'room1')();
-});
+} ());
 
 mongoose
   .connect(MONGO_DB_CODE, { useNewUrlParser: true, })
