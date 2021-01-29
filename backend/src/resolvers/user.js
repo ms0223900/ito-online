@@ -10,7 +10,7 @@ const getUsers = async () => {
 };
 
 const createUser = async (_, { username, }, ctx) => {
-
+  
 };
 
 module.exports = {

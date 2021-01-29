@@ -2,7 +2,7 @@ const { ApolloServer, PubSub } = require('apollo-server');
 const mongoose = require('mongoose');
 // const typeDefs = require('./graphql/typeDefs.js')
 // const resolvers = require('./graphql/resolvers')
-const { MONGO_DB_CODE } = require('./config.js');
+const { MONGO_DB_CODE, SOCKET_EVENT } = require('./config.js');
 const User = require('./src/model/User.js');
 const { getUsers } = require('./src/resolvers/user.js');
 const { emitMessage } = require('./src/socket/socket.js');
@@ -39,10 +39,6 @@ app.get('/users', async (req, res) => {
   const users = await getUsers();
   res.send(users);
 });
-
-const SOCKET_EVENT_KEYS = {
-  ADD_COUNT: 'add-count',
-};
 
 
 const reducers = {
@@ -83,21 +79,23 @@ const reducers = {
   io.on('connection', socket => {
     console.log('user connected');
 
+    // init
+
     socket.on('chat-message', value => {
       console.log(value);
     });
 
-    socket.on('join-room', e => {
+    socket.on(SOCKET_EVENT.JOIN_ROOM, e => {
       console.log(e);
       if(e && e.roomId) {
         socket.join(e.roomId);
         emitMessage(socket, e.roomId)();
         const roomCounts = roomCountList.find(c => c.roomId === e.roomId);
-        socket.emit(SOCKET_EVENT_KEYS.ADD_COUNT, roomCounts || undefined);
+        socket.emit(SOCKET_EVENT.ADD_COUNT, roomCounts || undefined);
       }
     });
 
-    socket.on(SOCKET_EVENT_KEYS.ADD_COUNT, e => {
+    socket.on(SOCKET_EVENT.ADD_COUNT, e => {
       if(e) {
         console.log(e);
         const {
@@ -106,7 +104,7 @@ const reducers = {
         if(roomId) {
           const newRoomCountList = reducers.addCount({ roomCountList, }, { roomId, count, });
           roomCountList = newRoomCountList.latestDataList;
-          socket.to(roomId).emit(SOCKET_EVENT_KEYS.ADD_COUNT, newRoomCountList.updateData);
+          socket.to(roomId).emit(SOCKET_EVENT.ADD_COUNT, newRoomCountList.updateData);
           console.log(roomCountList);
         }
       }
@@ -115,8 +113,6 @@ const reducers = {
     socket.emit('chat-message', {
       message: 'message from server'
     });
-
-    emitMessage(io, 'room1')();
   });
 } ());
 

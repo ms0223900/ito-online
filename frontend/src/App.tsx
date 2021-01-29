@@ -2,77 +2,78 @@ import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import { io } from 'socket.io-client'
+import { io } from 'socket.io-client';
 import { API_URI } from './constants/API';
 
-const socket = io(API_URI)
+const socket = io(API_URI);
 
-export enum SOCKET_EVENT {
-  ADD_COUNT = 'ADD_COUNT',
-  JOIN_ROOM = 'JOIN_ROOM',
-  ROOM_MES = 'ROOM_MES',
+export const SOCKET_EVENT = {
+  ADD_COUNT: 'ADD_COUNT',
+  JOIN_ROOM: 'JOIN_ROOM',
+  ROOM_MES: 'ROOM_MES',
+  CHAT: 'CHAT',
 };
 
 socket.on('room-mes', (e: any) => {
-  console.log(e)
-})
+  console.log(e);
+});
 
-const user = `User-${~~(Math.random() * 100000)}`
+const user = `User-${~~(Math.random() * 100000)}`;
 
 function App() {
-  const [roomId, setRoom] = React.useState('')
-  const [messages, setMessage] = React.useState<any[]>([])
-  const [count, setCount] = React.useState(0)
+  const [roomId, setRoom] = React.useState('');
+  const [messages, setMessage] = React.useState<any[]>([]);
+  const [count, setCount] = React.useState(0);
 
   React.useEffect(() => {
-    socket.emit('chat-message', 'HI from client')
+    socket.emit('chat-message', 'HI from client');
     socket.on(SOCKET_EVENT.ROOM_MES, (e: any) => {
-      console.log(e)
-      setMessage(m => [...m, e])
-    })
+      console.log(e);
+      setMessage(m => [...m, e]);
+    });
     socket.on(SOCKET_EVENT.ADD_COUNT, (e: any) => {
-      console.log(e)
+      console.log(e);
       if(e) {
-        (roomId === e.roomId) && setCount(e.count)
+        (roomId === e.roomId) && setCount(e.count);
       } else {
-        setCount(0)
+        setCount(0);
       }
-    })
+    });
     return () => {
       socket
         .off(SOCKET_EVENT.ADD_COUNT)
-        .off(SOCKET_EVENT.ROOM_MES)
-    }
-  }, [roomId])
+        .off(SOCKET_EVENT.ROOM_MES);
+    };
+  }, [roomId]);
 
   const handleJoinRoom = (roomId='', user: string) => () => {
-    socket.emit('join-room', {
+    socket.emit(SOCKET_EVENT.JOIN_ROOM, {
       roomId,
       user,
-    })
-    setRoom(roomId)
-  }
+    });
+    setRoom(roomId);
+  };
 
   const handleSendMessage = () => {
     socket.emit('chat-message', {
       roomId,
       message: 'Send Message From Room: ' + roomId,
       user,
-    })
-  }
+    });
+  };
 
   const handleAddCount = () => {
     socket.emit('add-count', {
       roomId,
       count: 1,
       user,
-    })
-    setCount(c => c + 1)
-  }
+    });
+    setCount(c => c + 1);
+  };
 
   useEffect(() => {
 
-  }, [])
+  }, []);
 
   return (
     <div className="App">
