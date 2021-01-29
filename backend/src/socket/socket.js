@@ -20,12 +20,15 @@ const initUser = {
 const initPlayer = {
   ...initUser,
   isReady: false,
+  isCardPlayed: false,
+  cardNow: null,
 };
 
 const GAME_STATUS = {
   READY: 'READY',
   START: 'START',
   CONTINUED: 'CONTINUED',
+  PASS: 'PASS',
   OVER: 'OVER',
   ERROR: 'ERROR',
 };
@@ -58,16 +61,28 @@ class ItoGame {
     initLife=3,
     cardAmount=100
   }) {
+    this.initLife = initLife;
     this.life = initLife;
     this.players = [];
     this.cards = this.makeRandomCards(cardAmount);
+    this.cardsOnDesk = [];
+    this.latestCard = Infinity;
+  }
+
+  init() {
+    this.cardsOnDesk = [];
+    this.life = this.initLife;
     this.latestCard = Infinity;
   }
 
   addPlayer(user) {
+    const newPlayer = {
+      ...initPlayer,
+      ...user,
+    };
     this.players = [
       ...this.players,
-      user,
+      newPlayer,
     ];
   }
   removePlayer(userId='') {
@@ -88,19 +103,41 @@ class ItoGame {
 
     const isSuccess = this.latestCard > card;
     this.latestCard = card;
-    if(this.life - 1 > 0) {  
-      this.life = isSuccess ? this.life : this.life - 1;
-      payload = {
-        gameStatus: GAME_STATUS.CONTINUED,
-        life: this.life,
-      };
+    if(isSuccess) {
+      const thisRoundPassed = this.checkThisRoundPassed();
+      if(thisRoundPassed) {
+        payload = ({
+          gameStatus: GAME_STATUS.PASS,
+        });
+      } else {
+        payload = ({
+          gameStatus: GAME_STATUS.CONTINUED,
+          life: this.life,
+        });
+      }
     } else {
-      payload = {
-        gameStatus: GAME_STATUS.OVER,
-      };
+      this.life = this.life - 1;
+      if(this.life > 0) { 
+        payload = ({
+          gameStatus: GAME_STATUS.CONTINUED,
+          life: this.life,
+        });
+      } else {
+        payload = ({
+          gameStatus: GAME_STATUS.OVER,
+        });
+      }
     }
-
     return payload;
+  }
+
+  updatePlayerByCard() {
+
+  }
+
+  checkThisRoundPassed() {
+    const allCardsPlayed = this.players.every(p => p.isCardPlayed);
+    return allCardsPlayed;
   }
 
   getSomeCards(cardsAmount=3) {
@@ -126,13 +163,13 @@ class ItoGame {
       const question = _.shuffle(questions)[0];
       const cardsAmount = this.players.length;
       const cards = this.getSomeCards(cardsAmount);
-      const playloadList = cards.map(card => ({
+      const payloadList = cards.map(card => ({
         gameStatus: GAME_STATUS.START,
         message: 'success',
         question,
         card,
       }));
-      return playloadList;
+      return payloadList;
     }
   }
 
@@ -155,17 +192,24 @@ class GameSocket {
     firstUser && this.game.addPlayer(firstUser);
   }
 
+  initGame() {
+    this.onListenUserActions();
+  }
+
   onListenUserActions() {
     this.socket.on(SOCKET_EVENT.USER_ACTION, e => {
       if(e) {
         switch (e.userActionType) {
-        case USER_ACTION.PLAY_CARD:
-          if(e.cardNumber) {
-            this.sendCardComparedResult(e.cardNumber);
+        case USER_ACTION.PLAY_CARD: {
+          const { userId, cardNumber, } = e;
+          if(userId && cardNumber) {
+            this.sendCardComparedResult({ userId, cardNumber, });
           }
-        case USER_ACTION.SET_READY:
+        }
+        case USER_ACTION.SET_READY: {
           const { isReady, userId, } = e;
           this.setPlayerReady({ isReady, userId, });
+        }
         default:
           break;
         }
@@ -184,10 +228,6 @@ class GameSocket {
   }
   checkAllPlayerAreReady() {
     return !this.game.players.find(p => !p.isReady);
-  }
-
-  initGame() {
-    this.onListenUserActions();
   }
 
   sendGameStart() {
@@ -219,8 +259,13 @@ class GameSocket {
     this.socket.emit(SOCKET_EVENT.GAME_STATUS, payload);
   }
 
-  sendCardComparedResult(cardNumber=0) {
-    const res = this.game.compareCard(cardNumber);
+  sendCardComparedResult({ userId, cardNumber, }) {
+    const res = this.game.compareCard({ userId, cardNumber, });
+    if(res.gameStatus === GAME_STATUS.PASS || 
+      res.gameStatus === GAME_STATUS.OVER
+    ) {
+      this.game.init();
+    }
     this.socket.emit(SOCKET_EVENT.COMPARED_RESULT, res);
   }
 }
@@ -230,13 +275,13 @@ class GamesManager {
     this.gameRooms = [];
   }
 
-  getGameRoom(roomId='') {
+  findGameRoom(roomId='') {
     return this.gameRooms.find(r => r.roomId === roomId);
   }
 
   enterGame(socket, { roomId, user, }) {
     SocketRoom.enterRoom(socket)(roomId);
-    const gameRoom = this.getGameRoom(roomId);
+    const gameRoom = this.findGameRoom(roomId);
     if(gameRoom) {
       gameRoom.game.addPlayer(user);
       return gameRoom;
