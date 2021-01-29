@@ -13,11 +13,26 @@ const emitMessage = (socket, roomId='') => () => {
   });
 };
 
+const initUser = {
+  id: '',
+  name: '',
+};
+const initPlayer = {
+  ...initUser,
+  isReady: false,
+};
+
 const GAME_STATUS = {
   READY: 'READY',
   START: 'START',
+  CONTINUED: 'CONTINUED',
   OVER: 'OVER',
   ERROR: 'ERROR',
+};
+
+const USER_ACTION = {
+  PLAY_CARD: 'PLAY_CARD',
+  SET_READY: 'SET_READY',
 };
 
 class SocketRoom {
@@ -40,8 +55,10 @@ class SocketRoom {
 
 class ItoGame {
   constructor({
+    initLife=3,
     cardAmount=100
   }) {
+    this.life = initLife;
     this.players = [];
     this.cards = this.makeRandomCards(cardAmount);
     this.latestCard = Infinity;
@@ -54,7 +71,7 @@ class ItoGame {
     ];
   }
   removePlayer(userId='') {
-    this.players = this.players.filter(p => p.userId !== userId);
+    this.players = this.players.filter(p => p.id !== userId);
   }
 
   makeRandomCards(cardAmount=100) {
@@ -67,11 +84,22 @@ class ItoGame {
   }
  
   compareCard(card) {
+    let payload = {};
+
     const isSuccess = this.latestCard > card;
     this.latestCard = card;
-    const payload = {
-      life: isSuccess ? 0 : -1,
-    };
+    if(this.life - 1 > 0) {  
+      this.life = isSuccess ? this.life : this.life - 1;
+      payload = {
+        gameStatus: GAME_STATUS.CONTINUED,
+        life: this.life,
+      };
+    } else {
+      payload = {
+        gameStatus: GAME_STATUS.OVER,
+      };
+    }
+
     return payload;
   }
 
@@ -91,7 +119,7 @@ class ItoGame {
 
     if(questions.length === 0) {
       return ({
-        type: GAME_STATUS.ERROR,
+        gameStatus: GAME_STATUS.ERROR,
         message: 'question-not-found',
       });
     } else {
@@ -99,7 +127,7 @@ class ItoGame {
       const cardsAmount = this.players.length;
       const cards = this.getSomeCards(cardsAmount);
       const playloadList = cards.map(card => ({
-        type: GAME_STATUS.START,
+        gameStatus: GAME_STATUS.START,
         message: 'success',
         question,
         card,
@@ -107,28 +135,68 @@ class ItoGame {
       return playloadList;
     }
   }
-}
 
+  getGameStatus() {
+
+  }
+}
 
 class GameSocket {
   constructor({
     roomId='',
     socket={},
-    initLife=3,
     gameStatus=GAME_STATUS.READY,
+    firstUser,
   }) {
     this.roomId = roomId;
-    this.life = initLife;
     this.gameStatus = gameStatus;
     this.socket = socket;
     this.game = new ItoGame();
+    firstUser && this.game.addPlayer(firstUser);
+  }
+
+  onListenUserActions() {
+    this.socket.on(SOCKET_EVENT.USER_ACTION, e => {
+      if(e) {
+        switch (e.userActionType) {
+        case USER_ACTION.PLAY_CARD:
+          if(e.cardNumber) {
+            this.sendCardComparedResult(e.cardNumber);
+          }
+        case USER_ACTION.SET_READY:
+          const { isReady, userId, } = e;
+          this.setPlayerReady({ isReady, userId, });
+        default:
+          break;
+        }
+      }
+    });
+  }
+
+  setPlayerReady({
+    isReady=false,
+    userId='',
+  }) {
+    const playerIdx = this.game.players.findIndex(p => p.id === userId);
+    if(playerIdx !== -1) {
+      this.game.players[playerIdx].isReady = isReady;
+    }
+  }
+  checkAllPlayerAreReady() {
+    return !this.game.players.find(p => !p.isReady);
+  }
+
+  initGame() {
+    this.onListenUserActions();
   }
 
   sendGameStart() {
     this.game.getQuestionAndCard()
       .then(res => {
         if(res.length > 0) {
-          this.socket.to(this.roomId).emit();
+          for (const payload of res) {
+            this.socket.to(this.roomId).emit(payload);
+          }
         }
       })
       .catch(e => {
@@ -157,7 +225,35 @@ class GameSocket {
   }
 }
 
+class GamesManager {
+  constructor() {
+    this.gameRooms = [];
+  }
+
+  getGameRoom(roomId='') {
+    return this.gameRooms.find(r => r.roomId === roomId);
+  }
+
+  enterGame(socket, { roomId, user, }) {
+    SocketRoom.enterRoom(socket)(roomId);
+    const gameRoom = this.getGameRoom(roomId);
+    if(gameRoom) {
+      gameRoom.game.addPlayer(user);
+      return gameRoom;
+    } else {
+      const _gameRoom = new GameSocket({
+        socket,
+        roomId,
+        firstUser: user,
+      });
+      this.gameRooms.push(_gameRoom);
+      return _gameRoom;
+    }
+  }
+}
+
 module.exports = {
   emitMessage,
   GameSocket,
+  GamesManager,
 };

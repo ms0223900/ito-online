@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const { MONGO_DB_CODE, SOCKET_EVENT } = require('./config.js');
 const User = require('./src/model/User.js');
 const { getUsers } = require('./src/resolvers/user.js');
-const { emitMessage } = require('./src/socket/socket.js');
+const { emitMessage, GamesManager } = require('./src/socket/socket.js');
 
 const PORT = process.env.PORT || 5001;
 
@@ -73,7 +73,8 @@ const reducers = {
 };
 
 (function() {
-  let roomCountList = [];
+  // let roomCountList = [];
+  const gamesManager = new GamesManager();
 
   // 每個client端的connection是獨立的scope
   io.on('connection', socket => {
@@ -88,10 +89,10 @@ const reducers = {
     socket.on(SOCKET_EVENT.JOIN_ROOM, e => {
       console.log(e);
       if(e && e.roomId) {
-        socket.join(e.roomId);
-        emitMessage(socket, e.roomId)();
-        const roomCounts = roomCountList.find(c => c.roomId === e.roomId);
-        socket.emit(SOCKET_EVENT.ADD_COUNT, roomCounts || undefined);
+        const {
+          roomId, user,
+        } = e;
+        gamesManager.enterGame(socket, { roomId, user, }).initGame();
       }
     });
 
