@@ -7,14 +7,11 @@ import { API_URI } from './constants/API';
 
 const socket = io(API_URI)
 
-export const SOCKET_EVENT_KEYS = {
-  ADD_COUNT: 'add-count',
-  ROOM_MES: 'room-mes'
+export enum SOCKET_EVENT {
+  ADD_COUNT = 'ADD_COUNT',
+  JOIN_ROOM = 'JOIN_ROOM',
+  ROOM_MES = 'ROOM_MES',
 };
-
-socket.on('connect', () => {
-
-})
 
 socket.on('room-mes', (e: any) => {
   console.log(e)
@@ -29,11 +26,11 @@ function App() {
 
   React.useEffect(() => {
     socket.emit('chat-message', 'HI from client')
-    socket.on(SOCKET_EVENT_KEYS.ROOM_MES, (e: any) => {
+    socket.on(SOCKET_EVENT.ROOM_MES, (e: any) => {
       console.log(e)
       setMessage(m => [...m, e])
     })
-    socket.on(SOCKET_EVENT_KEYS.ADD_COUNT, (e: any) => {
+    socket.on(SOCKET_EVENT.ADD_COUNT, (e: any) => {
       console.log(e)
       if(e) {
         (roomId === e.roomId) && setCount(e.count)
@@ -43,8 +40,8 @@ function App() {
     })
     return () => {
       socket
-        .off(SOCKET_EVENT_KEYS.ADD_COUNT)
-        .off(SOCKET_EVENT_KEYS.ROOM_MES)
+        .off(SOCKET_EVENT.ADD_COUNT)
+        .off(SOCKET_EVENT.ROOM_MES)
     }
   }, [roomId])
 

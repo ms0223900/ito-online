@@ -93,7 +93,6 @@ const reducers = {
         socket.join(e.roomId);
         emitMessage(socket, e.roomId)();
         const roomCounts = roomCountList.find(c => c.roomId === e.roomId);
-        // const counts = roomCounts ? roomCounts.count : 0;
         socket.emit(SOCKET_EVENT_KEYS.ADD_COUNT, roomCounts || undefined);
       }
     });
