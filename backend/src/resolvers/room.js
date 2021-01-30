@@ -13,21 +13,35 @@ const mockRooms = [
 
 const getRooms = async () => {
   try {
-    // const rooms = await Room.model.find();
-    const rooms = mockRooms;
+    const rooms = await Room.model.find();
+    // const rooms = mockRooms;
     return rooms;
   } catch (error) {
     console.log(error);
   }
 };
 
-const deleteRoom = async (roomId='') => {
+const createRoom = async (_, { firstUser, }, ctx) => {
+  const newRoom = new Room.model({
+    users: [firstUser],
+  });
+  const room = await newRoom.save();
+  return room;
+};
+
+const updateRoom = async (_, { user, }, ctx) => {
+
+};
+
+const deleteRoom = async (_, { roomId, }, ctx) => {
   try {
     // const rooms = await Room.model.find();
-    const rooms = Room.model.findByIdAndDelete(roomId, _, (err, _, res) => {
-      
+    await Room.model.findByIdAndDelete(roomId, _, (err, _, res) => {
+      console.log(res);
     });
-    return rooms;
+    return ({
+      message: `Room: ${roomId} deleted successfully.`
+    });
   } catch (error) {
     console.log(error);
   }
@@ -35,5 +49,6 @@ const deleteRoom = async (roomId='') => {
 
 module.exports = {
   getRooms,
+  createRoom,
   deleteRoom,
 };

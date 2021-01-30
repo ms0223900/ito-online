@@ -6,8 +6,10 @@ const cors = require('cors');
 const { MONGO_DB_CODE, SOCKET_EVENT } = require('./config.js');
 const User = require('./src/model/User.js');
 const { getUsers } = require('./src/resolvers/user.js');
-const { getRooms } = require('./src/resolvers/room.js');
 const { emitMessage, GamesManager } = require('./src/socket/socket.js');
+const {
+  useRoomRoutes,
+} = require('./src/routes/room');
 
 const PORT = process.env.PORT || 5001;
 
@@ -25,6 +27,7 @@ const CLIENT_SIDE_ORIGIN =
     process.env.CLIENT_URL :
     'http://localhost:3000';
 
+const express = require('express');
 const app = require('express')();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server, {
@@ -35,6 +38,9 @@ const io = require('socket.io')(server, {
 });
 
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true, }));
+
 app.get('/', (req, res) => {
   res.send(`<h1>HI It's Server Side.</h1>`);
 });
@@ -42,46 +48,8 @@ app.get('/users', async (req, res) => {
   const users = await getUsers();
   res.send(users);
 });
+useRoomRoutes(app);
 
-app.get('/rooms', async (req, res) => {
-  const rooms = await getRooms();
-  res.send(rooms);
-});
-app.post('/room', (req, res) => {
-  console.log(req.body);
-});
-
-
-const reducers = {
-  addCount(state, payload) {
-    const {
-      roomCountList=[],
-    } = state;
-    const {
-      roomId, count
-    } = payload;
-    let newRoomCountList = [...roomCountList];
-
-    const roomCountsIndex = roomCountList.findIndex(c => c.roomId === roomId);
-
-    if(roomCountsIndex !== -1) {
-      newRoomCountList[roomCountsIndex] = {
-        ...newRoomCountList[roomCountsIndex],
-        count: newRoomCountList[roomCountsIndex].count + count,
-      };
-    } else {
-      newRoomCountList.push({
-        roomId,
-        count: 1,
-      });
-    }
-
-    return ({
-      updateData: newRoomCountList[roomCountsIndex],
-      latestDataList: newRoomCountList,
-    });
-  },
-};
 
 class Player {
   constructor() {
@@ -117,7 +85,7 @@ class Player {
         }
         player.setPlayerState(roomId, user.id);
         gamesManager.enterGame(socket, { roomId, user, }).initGame(socket, io);
-        console.log(gamesManager);
+        // console.log(gamesManager);
       }
     });
 
@@ -127,10 +95,6 @@ class Player {
       if(player.userId && player.roomId) {
         gamesManager.handlePlayerExit(player.roomId, player.userId);
       }
-    });
-
-    socket.emit('chat-message', {
-      message: 'message from server'
     });
   });
 } ());
@@ -153,4 +117,5 @@ mongoose
 
 module.exports = {
   io,
+  app,
 };
