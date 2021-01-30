@@ -10,4 +10,7 @@ const schema = new Schema({
   ]
 });
 
-module.exports = model('Room', schema);
+module.exports = {
+  model: model('Room', schema),
+  schema,
+};

@@ -1,10 +1,12 @@
 const { ApolloServer, PubSub } = require('apollo-server');
 const mongoose = require('mongoose');
+const cors = require('cors');
 // const typeDefs = require('./graphql/typeDefs.js')
 // const resolvers = require('./graphql/resolvers')
 const { MONGO_DB_CODE, SOCKET_EVENT } = require('./config.js');
 const User = require('./src/model/User.js');
 const { getUsers } = require('./src/resolvers/user.js');
+const { getRooms } = require('./src/resolvers/room.js');
 const { emitMessage, GamesManager } = require('./src/socket/socket.js');
 
 const PORT = process.env.PORT || 5001;
@@ -32,12 +34,21 @@ const io = require('socket.io')(server, {
   }
 });
 
+app.use(cors());
 app.get('/', (req, res) => {
   res.send(`<h1>HI It's Server Side.</h1>`);
 });
 app.get('/users', async (req, res) => {
   const users = await getUsers();
   res.send(users);
+});
+
+app.get('/rooms', async (req, res) => {
+  const rooms = await getRooms();
+  res.send(rooms);
+});
+app.post('/room', (req, res) => {
+  console.log(req.body);
 });
 
 

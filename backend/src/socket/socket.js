@@ -96,7 +96,7 @@ class GameSocket {
     }
   }
   checkAllPlayerAreReady() {
-    return !this.game.players.find(p => !p.isReady);
+    return this.game.players.every(p => p.isReady);
   }
 
   sendGameStart() {

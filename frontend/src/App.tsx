@@ -4,6 +4,7 @@ import './App.css';
 
 import { io } from 'socket.io-client';
 import { API_URI } from './constants/API';
+import useQueryRooms from './api/custom-hooks/useQueryRooms';
 
 const socket = io(API_URI);
 
@@ -38,6 +39,10 @@ function App() {
   const [roomId, setRoom] = React.useState('');
   const [messages, setMessage] = React.useState<any[]>([]);
   const [ready, setReady] = React.useState(false);
+  const {
+    loading,
+    responseData: roomList,
+  } = useQueryRooms();
 
   React.useEffect(() => {
     socket.emit('chat-message', 'HI from client');
@@ -99,8 +104,11 @@ function App() {
         <h1>{'Ito Online'}</h1>
         {roomId && <h2>{`Room: ${roomId}`}</h2>}
         <h2>{`User: ${user.name || user.id }`}</h2>
-        <button onClick={handleJoinRoom('room1', user)}>Join Room1</button>
-        <button onClick={handleJoinRoom('room2', user)}>Join Room2</button>
+        {roomList.map(r => (
+          <button onClick={handleJoinRoom(r.id, user)}>
+            {`Join ${r.id}`}
+          </button>
+        ))}
       </header>
       <div>
         <button onClick={handleSendMessage}>Send Message</button>
