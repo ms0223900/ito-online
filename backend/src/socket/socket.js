@@ -1,11 +1,9 @@
 const {
-  SOCKET_EVENT,
+  SOCKET_EVENT, GAME_STATUS, USER_ACTION,
 } = require('../../config.js');
 const {
-  io,
-} = require('../../index.js');
-const { getThemeQuestions } = require('../resolvers/themeQuestion.js');
-const _ = require('lodash');
+  ItoGame,
+} = require('./ItoGame');
 
 const emitMessage = (socket, roomId='') => () => {
   // const namespace = io.of('/');
@@ -14,31 +12,6 @@ const emitMessage = (socket, roomId='') => () => {
   socket.to(roomId).emit('room-mes', {
     message: `message from room: ${roomId}`
   });
-};
-
-const initUser = {
-  id: '',
-  name: '',
-};
-const initPlayer = {
-  ...initUser,
-  isReady: false,
-  isCardPlayed: false,
-  cardNow: null,
-};
-
-const GAME_STATUS = {
-  READY: 'READY',
-  START: 'START',
-  CONTINUED: 'CONTINUED',
-  PASS: 'PASS',
-  OVER: 'OVER',
-  ERROR: 'ERROR',
-};
-
-const USER_ACTION = {
-  PLAY_CARD: 'PLAY_CARD',
-  SET_READY: 'SET_READY',
 };
 
 class SocketRoom {
@@ -59,158 +32,32 @@ class SocketRoom {
   }
 }
 
-class ItoGame {
-  constructor({
-    initLife=3,
-    cardAmount=100
-  }) {
-    this.initLife = initLife;
-    this.passedRounds = 0;
-    this.init();
-    this.cards = this.makeRandomCards(cardAmount);
-  }
-
-  init() {
-    this.cardsOnDesk = [];
-    this.players = [];
-    this.life = this.initLife;
-    this.latestCard = Infinity;
-  }
-
-  initPlayer() {
-
-  }
-  addPlayer(user) {
-    const newPlayer = {
-      ...initPlayer,
-      ...user,
-    };
-    this.players = [
-      ...this.players,
-      newPlayer,
-    ];
-  }
-  removePlayer(userId='') {
-    this.players = this.players.filter(p => p.id !== userId);
-    return this.players;
-  }
-
-  makeRandomCards(cardAmount=100) {
-    const cards = [...Array(cardAmount).keys()].map(k => k + 1);
-    const res = _.shuffle(cards);
-    return res;
-  }
-  updateCard() {
-
-  }
- 
-  compareCard(card) {
-    let payload = {
-      gameStatus: GAME_STATUS.CONTINUED,
-    };
-
-    const isSuccess = this.latestCard > card;
-    this.latestCard = card;
-    if(isSuccess) {
-      const thisRoundPassed = this.checkThisRoundPassed();
-      this.passedRounds += 1;
-      if(thisRoundPassed) {
-        payload = ({
-          gameStatus: GAME_STATUS.PASS,
-          passedRounds,
-        });
-      } else {
-        payload = ({
-          gameStatus: GAME_STATUS.CONTINUED,
-          life: this.life,
-        });
-      }
-    } else {
-      this.life = this.life - 1;
-      if(this.life > 0) { 
-        payload = ({
-          gameStatus: GAME_STATUS.CONTINUED,
-          life: this.life,
-        });
-      } else {
-        payload = ({
-          gameStatus: GAME_STATUS.OVER,
-          passedRounds,
-        });
-      }
-    }
-    return payload;
-  }
-
-  updatePlayerByCard() {
-
-  }
-
-  checkThisRoundPassed() {
-    const allCardsPlayed = this.players.every(p => p.isCardPlayed);
-    return allCardsPlayed;
-  }
-
-  getSomeCards(cardsAmount=3) {
-    if(cardAmount > this.cards.length) {
-      throw new Error('Too many card request.');
-    }
-    const cards = this.cards.slice(0, cardsAmount);
-    const remainCards = this.cards.slice(cardsAmount);
-    this.cards = remainCards;
-    return cards;
-  }
-
-  async getQuestionAndCard() {
-    const questions = await getThemeQuestions();
-    console.log(questions);
-
-    if(questions.length === 0) {
-      return ({
-        gameStatus: GAME_STATUS.ERROR,
-        message: 'question-not-found',
-      });
-    } else {
-      const question = _.shuffle(questions)[0];
-      const cardsAmount = this.players.length;
-      const cards = this.getSomeCards(cardsAmount);
-
-      const payloadList = cards.map(card => ({
-        gameStatus: GAME_STATUS.START,
-        message: 'success',
-        question,
-        card,
-      }));
-      return payloadList;
-    }
-  }
-
-  getGameStatus() {
-
-  }
-}
 
 class GameSocket {
   constructor({
     roomId='',
+    io={},
     socket={},
     gameStatus=GAME_STATUS.READY,
     firstUser,
   }) {
     this.roomId = roomId;
     this.gameStatus = gameStatus;
+    this.io = io;
     this.socket = socket;
     this.game = new ItoGame({});
     firstUser && this.game.addPlayer(firstUser);
   }
 
-  initGame() {
-    this.onListenUserActions();
+  initGame(socket, io) {
+    this.io = io;
+    this.onListenUserActions(socket);
   }
 
-  onListenUserActions() {
-    this.socket.on(SOCKET_EVENT.USER_ACTION, e => {
+  onListenUserActions(socket, actions) {
+    socket.on(SOCKET_EVENT.USER_ACTION, e => {
       if(e) {
+        console.log(`Action: `, e);
         switch (e.userActionType) {
         case USER_ACTION.PLAY_CARD: {
           const { userId, cardNumber, } = e;
@@ -221,6 +68,11 @@ class GameSocket {
         case USER_ACTION.SET_READY: {
           const { isReady, userId, } = e;
           this.setPlayerReady({ isReady, userId, });
+          const allAreReady = this.checkAllPlayerAreReady();
+          if(allAreReady) {
+            this.sendGameStart();
+          }
+          console.log(allAreReady);
         }
         default:
           break;
@@ -249,12 +101,10 @@ class GameSocket {
 
   sendGameStart() {
     this.game.getQuestionAndCard()
-      .then(res => {
-        if(res.length > 0) {
-          for (const payload of res) {
-            this.socket.to(this.roomId).emit(payload);
-          }
-        }
+      .then(payload => {
+        this.io
+          .in(this.roomId)
+          .emit(SOCKET_EVENT.GAME_STATUS, payload);
       })
       .catch(e => {
         console.log(e);
@@ -302,6 +152,7 @@ class GamesManager {
       message: `${user.id || user.name } successfully enter room: ${roomId}`
     });
   }
+  
 
   enterGame(socket, { roomId, user, }) {
     this.sendEnterMes(socket, { roomId, user, });

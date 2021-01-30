@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -12,7 +12,12 @@ export const SOCKET_EVENT = {
   JOIN_ROOM: 'JOIN_ROOM',
   ROOM_MES: 'ROOM_MES',
   GAME_STATUS: 'GAME_STATUS',
+  USER_ACTION: 'USER_ACTION',
   CHAT: 'CHAT',
+};
+export const USER_ACTION = {
+  PLAY_CARD: 'PLAY_CARD',
+  SET_READY: 'SET_READY',
 };
 
 socket.on('room-mes', (e: any) => {
@@ -32,7 +37,7 @@ export interface User {
 function App() {
   const [roomId, setRoom] = React.useState('');
   const [messages, setMessage] = React.useState<any[]>([]);
-  const [count, setCount] = React.useState(0);
+  const [ready, setReady] = React.useState(false);
 
   React.useEffect(() => {
     socket.emit('chat-message', 'HI from client');
@@ -48,14 +53,6 @@ function App() {
       }
     });
 
-    socket.on(SOCKET_EVENT.ADD_COUNT, (e: any) => {
-      console.log(e);
-      if(e) {
-        (roomId === e.roomId) && setCount(e.count);
-      } else {
-        setCount(0);
-      }
-    });
     return () => {
       socket
         .off(SOCKET_EVENT.GAME_STATUS)
@@ -80,18 +77,21 @@ function App() {
     });
   };
 
-  const handleAddCount = () => {
-    socket.emit('add-count', {
-      roomId,
-      count: 1,
-      user,
+  const handleSetReady = useCallback(() => {
+    // setState會觸發兩次，所以emit不適合放裡面
+    setReady(r => {
+      const isReady = !r;
+      return isReady;
     });
-    setCount(c => c + 1);
-  };
+  }, []);
 
   useEffect(() => {
-
-  }, []);
+    socket.emit(SOCKET_EVENT.USER_ACTION, {
+      userActionType: USER_ACTION.SET_READY,
+      userId: user.id,
+      isReady: ready,
+    });
+  }, [ready]);
 
   return (
     <div className="App">
@@ -104,10 +104,9 @@ function App() {
       </header>
       <div>
         <button onClick={handleSendMessage}>Send Message</button>
-        <button onClick={handleAddCount}>
-          <h2>+1</h2>
+        <button onClick={handleSetReady}>
+          <h2>{ready ? 'Waiting others...' : 'Ready'}</h2>
         </button>
-        <h2>Count: {count}</h2>
         {messages.map((m, i) => (
           <div key={i}>{JSON.stringify(m)}</div>
         ))}

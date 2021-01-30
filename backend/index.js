@@ -105,7 +105,7 @@ class Player {
           gamesManager.handlePlayerExit(player.roomId, player.user);
         }
         player.setPlayerState(roomId, user.id);
-        gamesManager.enterGame(socket, { roomId, user, }).initGame();
+        gamesManager.enterGame(socket, { roomId, user, }).initGame(socket, io);
         console.log(gamesManager);
       }
     });

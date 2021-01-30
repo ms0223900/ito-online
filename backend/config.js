@@ -9,8 +9,24 @@ const SOCKET_EVENT = {
   USER_ACTION: 'USER_ACTION',
 };
 
+const GAME_STATUS = {
+  READY: 'READY',
+  START: 'START',
+  CONTINUED: 'CONTINUED',
+  PASS: 'PASS',
+  OVER: 'OVER',
+  ERROR: 'ERROR',
+};
+
+const USER_ACTION = {
+  PLAY_CARD: 'PLAY_CARD',
+  SET_READY: 'SET_READY',
+};
+
 module.exports = {
   SOCKET_EVENT,
+  GAME_STATUS,
+  USER_ACTION,
   MONGO_DB_CODE: 'mongodb+srv://test-merng:4pgdgWoS1NamoYd0@cluster0.zmfzq.mongodb.net/database?retryWrites=true&w=majority',
   SECRET_KEY: 'some-secret-key',
 };
