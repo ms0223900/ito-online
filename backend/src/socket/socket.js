@@ -1,8 +1,11 @@
 const {
   SOCKET_EVENT,
 } = require('../../config.js');
-const _ = require('lodash');
+const {
+  io,
+} = require('../../index.js');
 const { getThemeQuestions } = require('../resolvers/themeQuestion.js');
+const _ = require('lodash');
 
 const emitMessage = (socket, roomId='') => () => {
   // const namespace = io.of('/');
@@ -62,19 +65,21 @@ class ItoGame {
     cardAmount=100
   }) {
     this.initLife = initLife;
-    this.life = initLife;
-    this.players = [];
+    this.passedRounds = 0;
+    this.init();
     this.cards = this.makeRandomCards(cardAmount);
-    this.cardsOnDesk = [];
-    this.latestCard = Infinity;
   }
 
   init() {
     this.cardsOnDesk = [];
+    this.players = [];
     this.life = this.initLife;
     this.latestCard = Infinity;
   }
 
+  initPlayer() {
+
+  }
   addPlayer(user) {
     const newPlayer = {
       ...initPlayer,
@@ -87,6 +92,7 @@ class ItoGame {
   }
   removePlayer(userId='') {
     this.players = this.players.filter(p => p.id !== userId);
+    return this.players;
   }
 
   makeRandomCards(cardAmount=100) {
@@ -99,15 +105,19 @@ class ItoGame {
   }
  
   compareCard(card) {
-    let payload = {};
+    let payload = {
+      gameStatus: GAME_STATUS.CONTINUED,
+    };
 
     const isSuccess = this.latestCard > card;
     this.latestCard = card;
     if(isSuccess) {
       const thisRoundPassed = this.checkThisRoundPassed();
+      this.passedRounds += 1;
       if(thisRoundPassed) {
         payload = ({
           gameStatus: GAME_STATUS.PASS,
+          passedRounds,
         });
       } else {
         payload = ({
@@ -125,6 +135,7 @@ class ItoGame {
       } else {
         payload = ({
           gameStatus: GAME_STATUS.OVER,
+          passedRounds,
         });
       }
     }
@@ -163,6 +174,7 @@ class ItoGame {
       const question = _.shuffle(questions)[0];
       const cardsAmount = this.players.length;
       const cards = this.getSomeCards(cardsAmount);
+
       const payloadList = cards.map(card => ({
         gameStatus: GAME_STATUS.START,
         message: 'success',
@@ -188,7 +200,7 @@ class GameSocket {
     this.roomId = roomId;
     this.gameStatus = gameStatus;
     this.socket = socket;
-    this.game = new ItoGame();
+    this.game = new ItoGame({});
     firstUser && this.game.addPlayer(firstUser);
   }
 
@@ -215,6 +227,11 @@ class GameSocket {
         }
       }
     });
+  }
+  removeListeners() {
+    this.socket.removeAllListeners([
+      SOCKET_EVENT.USER_ACTION,
+    ]);
   }
 
   setPlayerReady({
@@ -279,7 +296,15 @@ class GamesManager {
     return this.gameRooms.find(r => r.roomId === roomId);
   }
 
+  sendEnterMes(socket, { roomId, user, }) {
+    socket.to(roomId).emit(SOCKET_EVENT.GAME_STATUS, {
+      gameStatus: GAME_STATUS.READY,
+      message: `${user.id || user.name } successfully enter room: ${roomId}`
+    });
+  }
+
   enterGame(socket, { roomId, user, }) {
+    this.sendEnterMes(socket, { roomId, user, });
     SocketRoom.enterRoom(socket)(roomId);
     const gameRoom = this.findGameRoom(roomId);
     if(gameRoom) {
@@ -293,6 +318,19 @@ class GamesManager {
       });
       this.gameRooms.push(_gameRoom);
       return _gameRoom;
+    }
+  }
+
+  handlePlayerExit(roomId='', userId='') {
+    const gameRoom = this.findGameRoom(roomId);
+    if(gameRoom) {
+      const players = gameRoom.game.removePlayer(userId);
+      if(players.length === 0) {
+        // 刪掉該房間
+        this.gameRooms = this.gameRooms.filter(g => g.roomId !== roomId);
+        console.log(this.gameRooms);
+        // update db
+      }
     }
   }
 }

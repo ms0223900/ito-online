@@ -72,6 +72,18 @@ const reducers = {
   },
 };
 
+class Player {
+  constructor() {
+    this.userId = '';
+    this.roomId = '';
+  }
+
+  setPlayerState(roomId, userId) {
+    this.roomId = roomId;
+    this.userId = userId;
+  }
+}
+
 (function() {
   // let roomCountList = [];
   const gamesManager = new GamesManager();
@@ -79,35 +91,30 @@ const reducers = {
   // 每個client端的connection是獨立的scope
   io.on('connection', socket => {
     console.log('user connected');
+    const player = new Player();
 
     // init
-
-    socket.on('chat-message', value => {
-      console.log(value);
-    });
-
     socket.on(SOCKET_EVENT.JOIN_ROOM, e => {
       console.log(e);
-      if(e && e.roomId) {
+      if(e && e.roomId && e.user) {
         const {
           roomId, user,
         } = e;
+        // enter new room
+        if(roomId !== player.roomId) {
+          gamesManager.handlePlayerExit(player.roomId, player.user);
+        }
+        player.setPlayerState(roomId, user.id);
         gamesManager.enterGame(socket, { roomId, user, }).initGame();
+        console.log(gamesManager);
       }
     });
 
-    socket.on(SOCKET_EVENT.ADD_COUNT, e => {
-      if(e) {
-        console.log(e);
-        const {
-          roomId, count,
-        } = e;
-        if(roomId) {
-          const newRoomCountList = reducers.addCount({ roomCountList, }, { roomId, count, });
-          roomCountList = newRoomCountList.latestDataList;
-          socket.to(roomId).emit(SOCKET_EVENT.ADD_COUNT, newRoomCountList.updateData);
-          console.log(roomCountList);
-        }
+    // leave room, offline
+    socket.on('disconnect', e => {
+      console.log(player, 'user disconnected.');
+      if(player.userId && player.roomId) {
+        gamesManager.handlePlayerExit(player.roomId, player.userId);
       }
     });
 
@@ -132,3 +139,7 @@ mongoose
   .catch(err => {
     console.log(err);
   });
+
+module.exports = {
+  io,
+};

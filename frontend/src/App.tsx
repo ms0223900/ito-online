@@ -11,6 +11,7 @@ export const SOCKET_EVENT = {
   ADD_COUNT: 'ADD_COUNT',
   JOIN_ROOM: 'JOIN_ROOM',
   ROOM_MES: 'ROOM_MES',
+  GAME_STATUS: 'GAME_STATUS',
   CHAT: 'CHAT',
 };
 
@@ -18,7 +19,15 @@ socket.on('room-mes', (e: any) => {
   console.log(e);
 });
 
-const user = `User-${~~(Math.random() * 100000)}`;
+const userId = ~~(Math.random() * 100000);
+const user = {
+  id: String(userId),
+  name: '',
+};
+export interface User {
+  id: string
+  name?: string
+}
 
 function App() {
   const [roomId, setRoom] = React.useState('');
@@ -31,6 +40,14 @@ function App() {
       console.log(e);
       setMessage(m => [...m, e]);
     });
+
+    socket.on(SOCKET_EVENT.GAME_STATUS, (e: any) => {
+      console.log(e);
+      if(e.message) {
+        setMessage(m => [...m, e]);
+      }
+    });
+
     socket.on(SOCKET_EVENT.ADD_COUNT, (e: any) => {
       console.log(e);
       if(e) {
@@ -41,12 +58,13 @@ function App() {
     });
     return () => {
       socket
+        .off(SOCKET_EVENT.GAME_STATUS)
         .off(SOCKET_EVENT.ADD_COUNT)
         .off(SOCKET_EVENT.ROOM_MES);
     };
   }, [roomId]);
 
-  const handleJoinRoom = (roomId='', user: string) => () => {
+  const handleJoinRoom = (roomId='', user: User) => () => {
     socket.emit(SOCKET_EVENT.JOIN_ROOM, {
       roomId,
       user,
@@ -80,6 +98,7 @@ function App() {
       <header className="App-header">
         <h1>{'Ito Online'}</h1>
         {roomId && <h2>{`Room: ${roomId}`}</h2>}
+        <h2>{`User: ${user.name || user.id }`}</h2>
         <button onClick={handleJoinRoom('room1', user)}>Join Room1</button>
         <button onClick={handleJoinRoom('room2', user)}>Join Room2</button>
       </header>
