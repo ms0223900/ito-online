@@ -9,5 +9,6 @@ export interface RoomListProps {
 }
 
 export interface RoomPartProps extends RoomListProps {
+  loading?: boolean
   onCreateRoom: (e: any) => any
 }

@@ -1,12 +1,11 @@
 import { useState, useCallback } from "react";
-import fetchDataByAPI from "../functions/fetchDataByAPI";
+import fetchDataByAPI, { FetchDataByAPIOptions } from "../functions/fetchDataByAPI";
 
-export interface UseFetchOptions<Res> {
+export interface UseFetchOptions<Res> extends Omit<FetchDataByAPIOptions<Res>, 'uri' | 'defaultRes'> {
   apiPath: string
   requestInit?: RequestInit
   initResponseData: Res
   fetchFn?: (params: any) => Promise<Res>
-  useCorsPrefix?: boolean
 }
 
 export default function useFetch<T>({
@@ -16,12 +15,18 @@ export default function useFetch<T>({
   const [error, setErr] = useState();
   const [responseData, setResponseData] = useState<T>(initResponseData);
 
-  const fetchData = useCallback((params?: any) => {
+  const fetchData = useCallback((params={
+    postForm: {},
+  }) => {
     setLoading(true);
     const fetchCallback = fetchFn ? fetchFn(params) : fetchDataByAPI({
       uri: apiPath,
       defaultRes: initResponseData,
-      requestInit,
+      requestInit: {
+        ...requestInit,
+        ...params,
+      },
+      postForm: params.postForm,
     });
 
     fetchCallback

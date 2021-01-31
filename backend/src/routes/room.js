@@ -7,6 +7,9 @@ const roomGet = (app) => app.get('/rooms', async (req, res) => {
 
 const roomPost = (app) => app.post('/room', async (req, res) => {
   console.log('Request body: ', req.body);
+  if(!req.body.type) {
+    throw new Error('Please add type, such as CREATE or DELETE.');
+  }
   switch (req.body.type) {
   case 'CREATE': {
     try {

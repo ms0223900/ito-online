@@ -5,8 +5,9 @@ import { AccountCircle } from '@material-ui/icons';
 
 const RoomItem = (props: RoomItemProps) => {
   return (
-    <ListItem>
+    <ListItem button divider>
       <Box
+        width={'100%'}
         display={'flex'}
         justifyContent={'space-between'}
       >
@@ -17,9 +18,9 @@ const RoomItem = (props: RoomItemProps) => {
         </Box>
         <Box>
           <AccountCircle fontSize={'large'} />
-          <Typography variant={'h5'}>
+          <Box component={'span'}>
             {props.playersAmount}
-          </Typography>
+          </Box>
         </Box>
       </Box>
     </ListItem>

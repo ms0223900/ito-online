@@ -4,9 +4,11 @@ import { Switch, Route } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { API_URI } from './constants/API';
 import useQueryRooms from './api/custom-hooks/useQueryRooms';
-import { Container } from '@material-ui/core';
+import { Container, makeStyles } from '@material-ui/core';
 import ROUTES from 'constants/ROUTES';
 import { SOCKET_EVENT, USER_ACTION } from 'config';
+import RoomPartContainer from 'components/ito/RoomPart/containers/RoomPartContainer';
+import CreateRoomPartContainer from 'components/ito/Forms/containers/CreateRoomPartContainer';
 
 const socket = io(API_URI);
 
@@ -24,7 +26,15 @@ export interface User {
   name?: string
 }
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    maxWidth: 500, 
+  },
+
+}));
+
 function App() {
+  const classes = useStyles();
   const [roomId, setRoom] = React.useState('');
   const [messages, setMessage] = React.useState<any[]>([]);
   const [ready, setReady] = React.useState(false);
@@ -88,14 +98,16 @@ function App() {
   }, [ready]);
 
   return (
-    <Container>
+    <Container className={classes.root}>
       <Switch>
         <Route
           exact
           path={ROUTES.homepage}
+          component={RoomPartContainer}
         />
         <Route 
           path={ROUTES.rooms}
+          component={RoomPartContainer}
         />
         <Route 
           path={ROUTES.room}
@@ -108,6 +120,7 @@ function App() {
         />
         <Route 
           path={ROUTES.createRoom}
+          component={CreateRoomPartContainer}
         />
       </Switch>
     </Container>

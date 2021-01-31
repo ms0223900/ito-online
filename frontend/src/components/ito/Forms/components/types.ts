@@ -11,6 +11,7 @@ export interface CreateUserPartProps extends BasicFormProps {
 }
 
 export interface CreateRoomPartProps extends BasicFormProps {
+  loading?: boolean
   onCreateRoom: Callback
 }
 
