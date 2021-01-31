@@ -29,8 +29,32 @@ const createRoom = async (_, { firstUser, }, ctx) => {
   return room;
 };
 
-const updateRoom = async (_, { user, }, ctx) => {
+const updateRoom = async (_, { type, roomId, user, }, ctx) => {
+  const room = await Room.model.findById(roomId);
+  if(room) {
+    if(!user) {
+      throw new Error('User not input');
+    }
+    const players = room.players;
+    let newPlayers = [...players];
 
+    switch (type) {
+    case 'REMOVE_PLAYER': {
+      newPlayers = newPlayers.filter(p => p.id !== user.id);  
+    }
+    case 'ADD_PLAYER': {
+      newPlayers.push(user);
+    }
+    default:
+      break;
+    }
+
+    room.players = newPlayers;
+    await room.save();
+    return room;
+  } else {
+    throw new Error('Room not found.');
+  }
 };
 
 const deleteRoom = async (_, { roomId, }, ctx) => {
@@ -50,5 +74,6 @@ const deleteRoom = async (_, { roomId, }, ctx) => {
 module.exports = {
   getRooms,
   createRoom,
+  updateRoom,
   deleteRoom,
 };

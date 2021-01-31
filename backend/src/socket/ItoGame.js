@@ -19,6 +19,7 @@ const initPlayer = {
 
 class ItoGame {
   constructor({
+    minPlayersAmount=3, // 最少遊玩人數
     initLife=3,
     cardAmount=100
   }) {
@@ -103,8 +104,23 @@ class ItoGame {
     return payload;
   }
 
-  updatePlayerByCard() {
-
+  checkPlayersAmountdFulfill() {
+    return this.players.length > this.minPlayersAmount;
+  }
+  checkAllPlayerAreReady() {
+    return this.players.every(p => p.isReady);
+  }
+  checkPlayersReadyAndFulfill() {
+    return (this.checkPlayersAmountdFulfill() && this.checkAllPlayerAreReady());
+  }
+  setPlayerReady({
+    isReady=false,
+    userId='',
+  }) {
+    const playerIdx = this.players.findIndex(p => p.id === userId);
+    if(playerIdx !== -1) {
+      this.players[playerIdx].isReady = isReady;
+    }
   }
 
   checkThisRoundPassed() {

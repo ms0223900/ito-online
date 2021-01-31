@@ -28,6 +28,7 @@ const CLIENT_SIDE_ORIGIN =
     'http://localhost:3000';
 
 const express = require('express');
+const { deleteRoom, updateRoom } = require('./src/resolvers/room.js');
 const app = require('express')();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server, {
@@ -72,6 +73,9 @@ class Player {
     console.log('user connected');
     const player = new Player();
 
+    // 直接傳送所有房間?
+    socket.emit(SOCKET_EVENT.GAME_STATUS, );
+
     // init
     socket.on(SOCKET_EVENT.JOIN_ROOM, e => {
       console.log(e);
@@ -81,10 +85,14 @@ class Player {
         } = e;
         // enter new room
         if(roomId !== player.roomId) {
-          gamesManager.handlePlayerExit(player.roomId, player.user);
+          gamesManager.handlePlayerExit(player.roomId, player.user)();
         }
         player.setPlayerState(roomId, user.id);
-        gamesManager.enterGame(socket, { roomId, user, }).initGame(socket, io);
+        gamesManager
+          .enterGame(socket, { roomId, user, })
+          .then(res => {
+            res.initGame(socket, io);
+          });
         // console.log(gamesManager);
       }
     });
@@ -93,7 +101,13 @@ class Player {
     socket.on('disconnect', e => {
       console.log(player, 'user disconnected.');
       if(player.userId && player.roomId) {
-        gamesManager.handlePlayerExit(player.roomId, player.userId);
+        gamesManager.handlePlayerExit(player.roomId, player.userId)(
+          (payload) => {
+            deleteRoom({}, payload);
+          }, (payload) => {
+            updateRoom({}, payload);
+          }
+        );
       }
     });
   });

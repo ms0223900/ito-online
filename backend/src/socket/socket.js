@@ -1,6 +1,7 @@
 const {
   SOCKET_EVENT, GAME_STATUS, USER_ACTION,
 } = require('../../config.js');
+const { createRoom } = require('../resolvers/room.js');
 const {
   ItoGame,
 } = require('./ItoGame');
@@ -13,6 +14,9 @@ const emitMessage = (socket, roomId='') => () => {
     message: `message from room: ${roomId}`
   });
 };
+const getUserName = (user) => (
+  user.id || user.name
+);
 
 class SocketRoom {
   static leaveAllRooms(socket) {
@@ -67,8 +71,8 @@ class GameSocket {
         }
         case USER_ACTION.SET_READY: {
           const { isReady, userId, } = e;
-          this.setPlayerReady({ isReady, userId, });
-          const allAreReady = this.checkAllPlayerAreReady();
+          this.game.setPlayerReady({ isReady, userId, });
+          const allAreReady = this.game.checkPlayersReadyAndFulfill();
           if(allAreReady) {
             this.sendGameStart();
           }
@@ -85,30 +89,31 @@ class GameSocket {
       SOCKET_EVENT.USER_ACTION,
     ]);
   }
-
-  setPlayerReady({
-    isReady=false,
-    userId='',
-  }) {
-    const playerIdx = this.game.players.findIndex(p => p.id === userId);
-    if(playerIdx !== -1) {
-      this.game.players[playerIdx].isReady = isReady;
-    }
-  }
-  checkAllPlayerAreReady() {
-    return this.game.players.every(p => p.isReady);
+  sendAllInRoom(payload, socketEvent=SOCKET_EVENT.GAME_STATUS) {
+    this.io
+      .in(this.roomId)
+      .emit(socketEvent, payload);
   }
 
   sendGameStart() {
     this.game.getQuestionAndCard()
       .then(payload => {
-        this.io
-          .in(this.roomId)
-          .emit(SOCKET_EVENT.GAME_STATUS, payload);
+        this.sendAllInRoom(payload);
       })
       .catch(e => {
         console.log(e);
       });
+  }
+  makeEnterMes({ roomId, user, }) {
+    return ({
+      gameStatus: GAME_STATUS.READY,
+      players: this.game.players,
+      message: `${getUserName(user)} successfully enter room: ${roomId}`
+    });
+  }
+  sendEnterMes({ roomId, user, }) {
+    const payload = this.makeEnterMes({ roomId, user, });
+    this.sendAllInRoom(payload);
   }
 
   onListenUserStatus(callback) {
@@ -118,12 +123,6 @@ class GameSocket {
         callback(e);
       }
     });
-  }
-
-  sendGameStatus(roomId='', payload={
-    status: GAME_STATUS.READY, 
-  }) {
-    this.socket.emit(SOCKET_EVENT.GAME_STATUS, payload);
   }
 
   sendCardComparedResult({ userId, cardNumber, }) {
@@ -145,44 +144,53 @@ class GamesManager {
   findGameRoom(roomId='') {
     return this.gameRooms.find(r => r.roomId === roomId);
   }
-
-  sendEnterMes(socket, { roomId, user, }) {
-    socket.to(roomId).emit(SOCKET_EVENT.GAME_STATUS, {
-      gameStatus: GAME_STATUS.READY,
-      message: `${user.id || user.name } successfully enter room: ${roomId}`
-    });
-  }
   
-
-  enterGame(socket, { roomId, user, }) {
-    this.sendEnterMes(socket, { roomId, user, });
+  async enterGame(socket, { roomId, user, }) {
     SocketRoom.enterRoom(socket)(roomId);
-    const gameRoom = this.findGameRoom(roomId);
+    let gameRoom = this.findGameRoom(roomId);
+    // update room
     if(gameRoom) {
       gameRoom.game.addPlayer(user);
-      return gameRoom;
     } else {
-      const _gameRoom = new GameSocket({
-        socket,
-        roomId,
+      // create new room
+      const newRoom = await createRoom({}, {
         firstUser: user,
       });
-      this.gameRooms.push(_gameRoom);
-      return _gameRoom;
+      const newGameRoom = new GameSocket({
+        socket,
+        roomId: newRoom._id,
+        firstUser: user,
+      });
+      this.gameRooms.push(newGameRoom);
+      gameRoom = newGameRoom;
     }
+    gameRoom.sendEnterMes({ roomId, user, });
+    
+    return gameRoom;
   }
 
   handlePlayerExit(roomId='', userId='') {
-    const gameRoom = this.findGameRoom(roomId);
-    if(gameRoom) {
-      const players = gameRoom.game.removePlayer(userId);
-      if(players.length === 0) {
-        // 刪掉該房間
-        this.gameRooms = this.gameRooms.filter(g => g.roomId !== roomId);
-        console.log(this.gameRooms);
-        // update db
+    return (removeRoomCb, updateRoomCb) => {
+      const gameRoom = this.findGameRoom(roomId);
+
+      if(gameRoom) {
+        const players = gameRoom.game.removePlayer(userId);
+        if(players.length === 0) {
+          // 刪掉該房間
+          this.gameRooms = this.gameRooms.filter(g => g.roomId !== roomId);
+          console.log(this.gameRooms);
+          // update db
+          removeRoomCb && removeRoomCb({ roomId, });
+        } else {
+          updateRoomCb && updateRoomCb({
+            type: 'REMOVE_PLAYER',
+            roomId,
+            user: { id: userId, },
+          });
+        }
       }
-    }
+
+    };
   }
 }
 
