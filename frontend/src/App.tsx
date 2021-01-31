@@ -1,25 +1,14 @@
 import React, { useCallback, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Switch, Route } from 'react-router-dom';
 
 import { io } from 'socket.io-client';
 import { API_URI } from './constants/API';
 import useQueryRooms from './api/custom-hooks/useQueryRooms';
+import { Container } from '@material-ui/core';
+import ROUTES from 'constants/ROUTES';
+import { SOCKET_EVENT, USER_ACTION } from 'config';
 
 const socket = io(API_URI);
-
-export const SOCKET_EVENT = {
-  ADD_COUNT: 'ADD_COUNT',
-  JOIN_ROOM: 'JOIN_ROOM',
-  ROOM_MES: 'ROOM_MES',
-  GAME_STATUS: 'GAME_STATUS',
-  USER_ACTION: 'USER_ACTION',
-  CHAT: 'CHAT',
-};
-export const USER_ACTION = {
-  PLAY_CARD: 'PLAY_CARD',
-  SET_READY: 'SET_READY',
-};
 
 socket.on('room-mes', (e: any) => {
   console.log(e);
@@ -99,28 +88,29 @@ function App() {
   }, [ready]);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>{'Ito Online'}</h1>
-        {roomId && <h2>{`Room: ${roomId}`}</h2>}
-        <h2>{`User: ${user.name || user.id }`}</h2>
-        {roomList.map(r => (
-          <button onClick={handleJoinRoom(r.id, user)}>
-            {`Join ${r.name ? r.name : r.id}`}
-            <h2>{`Players: ${r.players.length}`}</h2>
-          </button>
-        ))}
-      </header>
-      <div>
-        <button onClick={handleSendMessage}>Send Message</button>
-        <button onClick={handleSetReady}>
-          <h2>{ready ? 'Waiting others...' : 'Ready'}</h2>
-        </button>
-        {messages.map((m, i) => (
-          <div key={i}>{JSON.stringify(m)}</div>
-        ))}
-      </div>
-    </div>
+    <Container>
+      <Switch>
+        <Route
+          exact
+          path={ROUTES.homepage}
+        />
+        <Route 
+          path={ROUTES.rooms}
+        />
+        <Route 
+          path={ROUTES.room}
+        />
+        <Route 
+          path={ROUTES.createUser}
+        />
+        <Route 
+          path={ROUTES.createQuestion}
+        />
+        <Route 
+          path={ROUTES.createRoom}
+        />
+      </Switch>
+    </Container>
   );
 }
 
