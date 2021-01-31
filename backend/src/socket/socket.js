@@ -145,28 +145,38 @@ class GamesManager {
     return this.gameRooms.find(r => r.roomId === roomId);
   }
   
-  async enterGame(socket, { roomId, user, }) {
-    SocketRoom.enterRoom(socket)(roomId);
-    let gameRoom = this.findGameRoom(roomId);
-    // update room
-    if(gameRoom) {
-      gameRoom.game.addPlayer(user);
-    } else {
-      // create new room
-      const newRoom = await createRoom({}, {
-        firstUser: user,
-      });
-      const newGameRoom = new GameSocket({
-        socket,
-        roomId: newRoom._id,
-        firstUser: user,
-      });
-      this.gameRooms.push(newGameRoom);
-      gameRoom = newGameRoom;
-    }
-    gameRoom.sendEnterMes({ roomId, user, });
+  enterGame(io, socket, { roomId, user, }) {
+    return async (updateRoomCb,) => {
+      SocketRoom.enterRoom(socket)(roomId);
+      let gameRoom = this.findGameRoom(roomId);
+      console.log(gameRoom);
+      if(gameRoom) {
+        // update room
+        gameRoom.game.addPlayer(user);
+        updateRoomCb && updateRoomCb({
+          type: 'ADD_PLAYER',
+          roomId,
+          user,
+        });
+      } else {
+        // 資料的create不在這邊
+        // const newRoom = await createRoom({}, {
+        //   firstUser: user,
+        // });
+        // create new room
+        const newGameRoom = new GameSocket({
+          io,
+          socket,
+          roomId,
+          firstUser: user,
+        });
+        this.gameRooms.push(newGameRoom);
+        gameRoom = newGameRoom;
+      }
+      gameRoom.sendEnterMes({ roomId, user, });
     
-    return gameRoom;
+      return gameRoom;
+    };
   }
 
   handlePlayerExit(roomId='', userId='') {

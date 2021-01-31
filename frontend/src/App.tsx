@@ -53,7 +53,7 @@ function App() {
 
     socket.on(SOCKET_EVENT.GAME_STATUS, (e: any) => {
       console.log(e);
-      if(e.message) {
+      if(e && e.message) {
         setMessage(m => [...m, e]);
       }
     });
@@ -106,7 +106,8 @@ function App() {
         <h2>{`User: ${user.name || user.id }`}</h2>
         {roomList.map(r => (
           <button onClick={handleJoinRoom(r.id, user)}>
-            {`Join ${r.id}`}
+            {`Join ${r.name ? r.name : r.id}`}
+            <h2>{`Players: ${r.players.length}`}</h2>
           </button>
         ))}
       </header>

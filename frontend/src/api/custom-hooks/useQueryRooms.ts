@@ -2,9 +2,15 @@ import { useEffect } from "react";
 import { API_URI } from "../../constants/API";
 import useFetch from "../../lib/custom-hooks/useFetch";
 
+export interface SinglePlayer {
+  id: string
+  name?: string
+}
+
 export interface SingleRoom {
   id: string
   name?: string
+  players: SinglePlayer[]
 }
 
 const URI = API_URI + '/rooms';

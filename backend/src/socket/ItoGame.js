@@ -23,6 +23,7 @@ class ItoGame {
     initLife=3,
     cardAmount=100
   }) {
+    this.minPlayersAmount = minPlayersAmount;
     this.initLife = initLife;
     this.passedRounds = 0;
     this.init();

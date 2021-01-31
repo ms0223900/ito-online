@@ -1,17 +1,18 @@
 const { getRooms, createRoom, deleteRoom } = require('../resolvers/room');
 
 const roomGet = (app) => app.get('/rooms', async (req, res) => {
-  const rooms = await getRooms();
+  const rooms = (await getRooms());
   res.send(rooms);
 });
 
 const roomPost = (app) => app.post('/room', async (req, res) => {
-  console.log(req.body);
+  console.log('Request body: ', req.body);
   switch (req.body.type) {
   case 'CREATE': {
     try {
       if(req.body.user && req.body.user.id) {
         const room = await createRoom({}, {
+          name: req.body.name,
           firstUser: req.body.user,
         });
         res.send(room);

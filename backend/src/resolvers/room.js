@@ -14,23 +14,36 @@ const mockRooms = [
 const getRooms = async () => {
   try {
     const rooms = await Room.model.find();
-    // const rooms = mockRooms;
-    return rooms;
+    const roomsWithId = rooms.map(r => ({
+      id: r._id,
+      _id: r._id,
+      name: r.name,
+      players: r.players.map(u => u ? {
+        _id: u._id,
+        name: u.name,
+        id: u.id,
+      } : u),
+    }));
+    return roomsWithId;
   } catch (error) {
     console.log(error);
   }
 };
 
-const createRoom = async (_, { firstUser, }, ctx) => {
+const createRoom = async (_, { firstUser, name, }, ctx) => {
   const newRoom = new Room.model({
-    users: [firstUser],
+    name,
+    players: [firstUser],
   });
+  console.log('New room:', newRoom);
   const room = await newRoom.save();
   return room;
 };
 
-const updateRoom = async (_, { type, roomId, user, }, ctx) => {
+const updateRoom = async (_, payload, ctx) => {
+  const { type, roomId, user, } = payload;
   const room = await Room.model.findById(roomId);
+  console.log('Update room:', payload, room);
   if(room) {
     if(!user) {
       throw new Error('User not input');
