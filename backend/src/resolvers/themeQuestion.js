@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const ThemeQuestion = require("../model/ThemeQuestion.js");
 
 const mockQuestions = [
@@ -19,12 +20,19 @@ const getThemeQuestions = async () => {
   }
 };
 
+const getRandomThemeQuestion = async () => {
+  const questions = await getThemeQuestions();
+  const question = _.shuffle(questions)[0];
+  return question;
+};
+
 const createThemeQuestions = async (_, { content, }, ctx) => {
   
 };
 
 module.exports = {
   getThemeQuestions,
+  getRandomThemeQuestion,
   createThemeQuestions,
 };
 

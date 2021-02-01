@@ -30,6 +30,15 @@ const getRooms = async () => {
   }
 };
 
+const getRoom = async (_, { roomId, }) => {
+  try {
+    const room = await Room.model.findById(roomId);
+    return room;
+  } catch (error) {
+    throw new Error('Find room failed.');
+  }
+};
+
 const createRoom = async (_, { firstUser, name, }, ctx) => {
   const newRoom = new Room.model({
     name,
@@ -85,6 +94,7 @@ const deleteRoom = async (_, { roomId, }, ctx) => {
 };
 
 module.exports = {
+  getRoom,
   getRooms,
   createRoom,
   updateRoom,

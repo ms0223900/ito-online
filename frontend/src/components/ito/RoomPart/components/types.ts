@@ -7,7 +7,6 @@ export interface RoomItemData {
   playersAmount: number
 }
 export interface RoomItemProps extends RoomItemData {
-  onEnterRoom: EnterRoomFn
 }
 export interface RoomListProps {
   roomListData: RoomItemData[]

@@ -11,7 +11,7 @@ import RoomPartContainer from 'components/ito/RoomPart/containers/RoomPartContai
 import CreateRoomPartContainer from 'components/ito/Forms/containers/CreateRoomPartContainer';
 import Header from 'components/ito/Common/components/Header';
 
-const socket = io(API_URI);
+export const socket = io(API_URI);
 
 socket.on('room-mes', (e: any) => {
   console.log(e);

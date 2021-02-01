@@ -3,7 +3,7 @@ const {
 } = require('../../config.js');
 const _ = require('lodash');
 const {
-  getThemeQuestions,
+  getThemeQuestions, getRandomThemeQuestion,
 } = require('../resolvers/themeQuestion');
 
 const initUser = {
@@ -140,16 +140,15 @@ class ItoGame {
   }
 
   async getQuestionAndCard() {
-    const questions = await getThemeQuestions();
+    const question = await getRandomThemeQuestion();
     console.log(questions);
 
-    if(questions.length === 0) {
+    if(!question) {
       return ({
         gameStatus: GAME_STATUS.ERROR,
         message: 'question-not-found',
       });
     } else {
-      const question = _.shuffle(questions)[0];
       const cardsAmount = this.players.length;
       const cards = this.getSomeCards(cardsAmount);
 

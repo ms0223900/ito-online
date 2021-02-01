@@ -16,8 +16,9 @@ const useRoomPart = () => {
     history.push(ROUTES.createRoom);
   }, [history]);
 
-  const handleEnterRoom: EnterRoomFn = useCallback(() => () => {
-    
+  const handleEnterRoom: EnterRoomFn = useCallback((roomId) => () => {
+    const URI = 
+    history.push(ROUTES.room, );
   }, []);
 
   const roomListData: RoomItemData[] = useMemo(() => (
