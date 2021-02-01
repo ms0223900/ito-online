@@ -41,14 +41,12 @@ class GameSocket {
   constructor({
     roomId='',
     io={},
-    socket={},
     gameStatus=GAME_STATUS.READY,
     firstUser,
   }) {
     this.roomId = roomId;
     this.gameStatus = gameStatus;
     this.io = io;
-    this.socket = socket;
     this.game = new ItoGame({});
     firstUser && this.game.addPlayer(firstUser);
   }
@@ -75,6 +73,8 @@ class GameSocket {
           const allAreReady = this.game.checkPlayersReadyAndFulfill();
           if(allAreReady) {
             this.sendGameStart();
+          } else {
+            this.sendPlayerReady({ userId, isReady, });
           }
           console.log(allAreReady);
         }
@@ -83,9 +83,10 @@ class GameSocket {
         }
       }
     });
+    return () => this.removeListeners(socket);
   }
-  removeListeners() {
-    this.socket.removeAllListeners([
+  removeListeners(socket) {
+    socket.removeAllListeners([
       SOCKET_EVENT.USER_ACTION,
     ]);
   }
@@ -94,7 +95,16 @@ class GameSocket {
       .in(this.roomId)
       .emit(socketEvent, payload);
   }
-
+  sendPlayerReady({ userId, isReady }) {
+    // 先送全部
+    this.sendAllInRoom({
+      players: this.game.players,
+    });
+    // 送一個
+    this.sendAllInRoom({ 
+      userId, isReady 
+    });
+  }
   sendGameStart() {
     this.game.getQuestionAndCard()
       .then(payload => {
@@ -116,15 +126,6 @@ class GameSocket {
     this.sendAllInRoom(payload);
   }
 
-  onListenUserStatus(callback) {
-    this.socket.on(SOCKET_EVENT.USER_STATUS, e => {
-      if(e) {
-        const { status } = e;
-        callback(e);
-      }
-    });
-  }
-
   sendCardComparedResult({ userId, cardNumber, }) {
     const res = this.game.compareCard({ userId, cardNumber, });
     if(res.gameStatus === GAME_STATUS.PASS || 
@@ -132,7 +133,7 @@ class GameSocket {
     ) {
       this.game.init();
     }
-    this.socket.emit(SOCKET_EVENT.COMPARED_RESULT, res);
+    this.sendAllInRoom(res, SOCKET_EVENT.COMPARED_RESULT);
   }
 }
 

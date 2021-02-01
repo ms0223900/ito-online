@@ -68,7 +68,7 @@ class Player {
   // let roomCountList = [];
   const gamesManager = new GamesManager();
 
-  // 每個client端的connection是獨立的scope
+  // 每個client端的connection是獨立的scope(socket都是獨立的)
   io.on('connection', socket => {
     console.log('user connected');
     const player = new Player();
@@ -104,12 +104,13 @@ class Player {
       console.log(player, 'user disconnected.');
       if(player.userId && player.roomId) {
         gamesManager.handlePlayerExit(player.roomId, player.userId)(
-          (payload) => {
-            deleteRoom({}, payload);
-          }, 
           // (payload) => {
-          //   updateRoom({}, payload);
-          // }
+          //   deleteRoom({}, payload);
+          // },
+          undefined, 
+          (payload) => {
+            updateRoom({}, payload);
+          }
         );
       }
     });
