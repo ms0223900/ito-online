@@ -106,9 +106,10 @@ class Player {
         gamesManager.handlePlayerExit(player.roomId, player.userId)(
           (payload) => {
             deleteRoom({}, payload);
-          }, (payload) => {
-            updateRoom({}, payload);
-          }
+          }, 
+          // (payload) => {
+          //   updateRoom({}, payload);
+          // }
         );
       }
     });

@@ -9,6 +9,7 @@ import ROUTES from 'constants/ROUTES';
 import { SOCKET_EVENT, USER_ACTION } from 'config';
 import RoomPartContainer from 'components/ito/RoomPart/containers/RoomPartContainer';
 import CreateRoomPartContainer from 'components/ito/Forms/containers/CreateRoomPartContainer';
+import Header from 'components/ito/Common/components/Header';
 
 const socket = io(API_URI);
 
@@ -99,6 +100,7 @@ function App() {
 
   return (
     <Container className={classes.root}>
+      <Header />
       <Switch>
         <Route
           exact

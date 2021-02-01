@@ -18,7 +18,7 @@ const CreateQuestionPart = (props: CreateQuestionPartProps) => {
     <Box>
       <Typography>{'Create Theme Question'}</Typography>
       <Box>
-        {'建立有關某個主題的程度。\n例如: 食物的臭度、海賊王角色的強度、小吃的美味程度...等'}
+        {'建立主題，內容須為某種程度。\n例如: 食物的臭度、海賊王角色的強度、小吃的美味程度...等'}
       </Box>
       <TextareaAutosize
         className={classes.input}
