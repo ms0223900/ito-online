@@ -1,7 +1,7 @@
-import { SinglePlayer } from "common-types";
+import { SingleUser } from "common-types";
 
 export interface ItoState {
-  user: SinglePlayer
+  user: SingleUser
 }
 
 export const initItoState: ItoState = {

@@ -1,3 +1,5 @@
+import { GameStatus } from "common-types";
+
 export enum SOCKET_EVENT {
   ADD_COUNT = 'ADD_COUNT',
   JOIN_ROOM = 'JOIN_ROOM',
@@ -5,6 +7,16 @@ export enum SOCKET_EVENT {
   GAME_STATUS = 'GAME_STATUS',
   USER_ACTION = 'USER_ACTION',
   CHAT = 'CHAT',
+};
+
+export const GAME_STATUS: GameStatus = {
+  READY: 'READY',
+  UPDATE_READY: 'UPDATE_READY',
+  START: 'START',
+  CONTINUED: 'CONTINUED',
+  PASS: 'PASS',
+  OVER: 'OVER',
+  ERROR: 'ERROR',
 };
 
 export enum USER_ACTION {

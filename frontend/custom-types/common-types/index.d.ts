@@ -1,14 +1,26 @@
 declare module "common-types" {
-  export type Callback = (...args: any[]) => any;
+  type Callback = (...args: any[]) => any;
   
-  export interface SinglePlayer {
+  interface SingleUser {
     id: string
     name?: string
+    isReady?: boolean
   }
 
-  export interface SingleRoom {
+  interface SingleRoom {
     id: string
     name?: string
-    players: SinglePlayer[]
+    players: SingleUser[]
   }
+
+  interface GameStatus {
+    READY: string
+    UPDATE_READY: string
+    START: string
+    CONTINUED: string
+    PASS: string
+    OVER: string
+    ERROR: string
+  }
+  type GameStatusKeys = keyof GameStatus
 }

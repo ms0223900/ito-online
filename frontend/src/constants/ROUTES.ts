@@ -8,4 +8,8 @@ const ROUTES = {
   
 };
 
+export interface RouterParams {
+  roomId: string
+}
+
 export default ROUTES;

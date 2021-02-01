@@ -96,13 +96,15 @@ class GameSocket {
       .emit(socketEvent, payload);
   }
   sendPlayerReady({ userId, isReady }) {
-    // 先送全部
-    this.sendAllInRoom({
-      players: this.game.players,
-    });
+    // 送全部
+    // this.sendAllInRoom({
+    //   players: this.game.players,
+    // });
     // 送一個
-    this.sendAllInRoom({ 
-      userId, isReady 
+    this.sendAllInRoom({
+      gameStatus: GAME_STATUS.UPDATE_READY,
+      userId, 
+      isReady 
     });
   }
   sendGameStart() {
