@@ -28,7 +28,7 @@ const ItoSocket = {
   },
   listenPlayerReadyUpdate(callback: Callback) {
     return this.listenGameStatus(payload => {
-      if(payload.gameStatus === GAME_STATUS.UPDATE_READY) {
+      if(payload && payload.gameStatus === GAME_STATUS.UPDATE_READY) {
         callback(payload);
       }
     });

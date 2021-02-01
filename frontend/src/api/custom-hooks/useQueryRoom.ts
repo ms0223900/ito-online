@@ -3,11 +3,11 @@ import { API_URI } from "constants/API";
 import useFetch from "lib/custom-hooks/useFetch";
 import { useEffect } from "react";
 
-const URI = API_URI + '/room';
+const getURI = (roomId='') => API_URI + '/room/' + roomId;
 
-const useQueryRoom = () => {
+const useQueryRoom = ({ roomId }: { roomId: string}) => {
   const fetched = useFetch<SingleRoom | undefined>({
-    apiPath: URI,
+    apiPath: getURI(roomId),
     initResponseData: undefined,
   });
 

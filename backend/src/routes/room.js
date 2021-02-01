@@ -1,8 +1,19 @@
-const { getRooms, createRoom, deleteRoom } = require('../resolvers/room');
+const { getRooms, createRoom, deleteRoom, getRoom } = require('../resolvers/room');
 
 const roomGet = (app) => app.get('/rooms', async (req, res) => {
   const rooms = (await getRooms());
   res.send(rooms);
+});
+
+const roomGetSingle = (app) => app.get('/room/:roomId', async (req, res) => {
+  const {
+    roomId,
+  } = req.params;
+  if(!roomId) {
+    throw new Error('Please input room id.');
+  }
+  const room = await getRoom({}, { roomId, });
+  res.send(room);
 });
 
 const roomPost = (app) => app.post('/room', async (req, res) => {
@@ -46,6 +57,7 @@ const roomPost = (app) => app.post('/room', async (req, res) => {
 function useRoomRoutes(app) {
   roomPost(app);
   roomGet(app);
+  roomGetSingle(app);
 }
 
 module.exports = {

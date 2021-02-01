@@ -1,15 +1,16 @@
 import useQueryRoom from "api/custom-hooks/useQueryRoom";
 import { socket } from "App";
 import { SingleRoom } from "common-types";
+import { PlayerItemProps } from "components/ito/RoomPart/components/WaitingRoom/types";
 import { initItoState } from "constants/context";
 import ItoSocket, { PlayerUpdateReadyPayload } from "constants/itoSocket";
 import { RouterParams } from "constants/ROUTES";
 import useToggle from "lib/custom-hooks/useToggle";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 
 const resolvers = {
-  udpateRoom: (state: { room: SingleRoom | undefined, }, payload: PlayerUpdateReadyPayload) => {
+  udpateRoomUser: (state: { room: SingleRoom | undefined, }, payload: PlayerUpdateReadyPayload) => {
     const { room: _room, } = state;
     const { userId, isReady, } = payload;
 
@@ -29,7 +30,15 @@ const resolvers = {
       }
     }
     return _room;
-  }
+  },
+
+  addPlayer() {
+
+  },
+
+  removePlayer() {
+
+  },
 };
 
 const useWaitingRoomPart = () => {
@@ -44,7 +53,7 @@ const useWaitingRoomPart = () => {
     toggle: isReady,
     handleToggle,
   } = useToggle(false);
-  const queried = useQueryRoom();
+  const queried = useQueryRoom({ roomId, });
   const [room, setRoom] = useState<SingleRoom>();
 
   const handleSetReady = useCallback(() => {
@@ -53,7 +62,7 @@ const useWaitingRoomPart = () => {
 
   const handleUpdateRoomPlayerReady = useCallback((payload: PlayerUpdateReadyPayload) => {
     setRoom(_room => (
-      resolvers.udpateRoom({ room: _room, }, payload)
+      resolvers.udpateRoomUser({ room: _room, }, payload)
     ));
   }, []);
 
@@ -83,9 +92,20 @@ const useWaitingRoomPart = () => {
     }
   }, [queried.room]);
 
+  const playerListData: PlayerItemProps[] = useMemo(() => (
+    room ? room.players.map(p => ({
+      ...p,
+      isReady: !!(p.isReady),
+      isMe: p.id === user.id,
+      playerName: p.name || p.id,
+    })) : []
+  ), [room, user.id]);
+
   return ({
+    isReady,
     loading: queried.loading,
     room,
+    playerListData,
     handleSetReady,
   });
 };
