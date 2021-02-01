@@ -6,15 +6,17 @@ export interface LifeItemProps {
   isHavingLife?: boolean
 }
 
+const color = '#D6032B';
+
 const LifeItem = ({
   isHavingLife
 }: LifeItemProps) => {
   return (
     <Box>
       {isHavingLife ? (
-        <Favorite />
+        <Favorite htmlColor={color} />
       ) : (
-        <FavoriteBorderOutlined />
+        <FavoriteBorderOutlined htmlColor={color} />
       )}
     </Box>
   );
