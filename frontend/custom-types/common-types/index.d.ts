@@ -10,7 +10,7 @@ declare module "common-types" {
   interface SingleRoom {
     id: string
     name?: string
-    players: SingleUser[]
+    users: SingleUser[]
   }
 
   interface GameStatus {

@@ -15,33 +15,55 @@ const resolvers = {
     const { userId, isReady, } = payload;
 
     if(_room) {
-      const players = _room.players;
+      const players = _room.users;
       let _players = [...players];
       const playerIdx = _players.findIndex(p => p.id === userId);
+
       if(playerIdx !== -1) {
         _players[playerIdx] = {
           ..._players[playerIdx],
           isReady,
         };
-        return ({
-          ..._room,
-          players: _players,
-        });
+        return _room;
       }
     }
     return _room;
   },
 
   addPlayer(state: { room: SingleRoom | undefined, }, payload: AddPlayerPayload) {
-
     const { room: _room, } = state;
-    return _room;
+    const {
+      user,
+    } = payload;
+    if(!_room) {
+      return _room;
+    } else {
+      let newRoom = {
+        ..._room,
+        users: [
+          ..._room.users,
+          user,
+        ]
+      };
+      return newRoom;
+    }
   },
 
   removePlayer(state: { room: SingleRoom | undefined, }, payload: RemovePlayerPayload) {
+    const { room, } = state;
+    if(!room) {
+      return room;
+    } else {
+      const {
+        userId
+      } = payload;
 
-    const { room: _room, } = state;
-    return _room;
+      const newRoom = {
+        ...room,
+        users: room.users.filter(u => u.id !== userId)
+      };
+      return newRoom;
+    }
   },
 };
 
@@ -111,7 +133,7 @@ const useWaitingRoomPart = () => {
   }, [queried.room]);
 
   const playerListData: PlayerItemProps[] = useMemo(() => (
-    room ? room.players.map(p => ({
+    room ? room.users.map(p => ({
       ...p,
       isReady: !!(p.isReady),
       isMe: p.id === user.id,

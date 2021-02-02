@@ -25,8 +25,7 @@ export interface PlayerUpdateReadyPayload {
 }
 export interface AddPlayerPayload {
   gameStatus: GameStatusTypes.ADD_PLAYER
-  userId: string
-  isReady: boolean
+  user: SingleUser
 }
 export interface RemovePlayerPayload {
   gameStatus: GameStatusTypes.REMOVE_PLAYER
