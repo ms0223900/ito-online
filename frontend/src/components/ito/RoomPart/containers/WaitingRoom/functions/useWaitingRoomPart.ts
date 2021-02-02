@@ -2,8 +2,9 @@ import useQueryRoom from "api/custom-hooks/useQueryRoom";
 import { socket } from "App";
 import { SingleRoom } from "common-types";
 import { PlayerItemProps } from "components/ito/RoomPart/components/WaitingRoom/types";
+import { SOCKET_EVENT, USER_ACTION } from "config";
 import { initItoState } from "constants/context";
-import ItoSocket, { AddPlayerPayload, PlayerUpdateReadyPayload, RemovePlayerPayload } from "constants/itoSocket";
+import ItoSocket, { AddPlayerPayload, PlayerUpdateReadyPayload, RemovePlayerPayload, UpdateAllPlayersPayload } from "constants/itoSocket";
 import { RouterParams } from "constants/ROUTES";
 import useToggle from "lib/custom-hooks/useToggle";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -35,6 +36,11 @@ const useWaitingRoomPart = () => {
       roomResolvers.udpateRoomUser({ room: _room, }, payload)
     ));
   }, []);
+  const handleUpdateAllPlayers = useCallback((payload: UpdateAllPlayersPayload) => {
+    setRoom(_room => (
+      roomResolvers.updateRoomAllUsers({ room: _room, }, payload)
+    ));
+  }, []);
   const handleAddPalyerToRoom = useCallback((payload: AddPlayerPayload) => {
     setRoom(_room => (
       roomResolvers.addPlayer({ room: _room, }, payload)
@@ -54,6 +60,7 @@ const useWaitingRoomPart = () => {
     });
     // 取得房間最新狀態
     const listener = ItoSocket.onListenGameStatus({
+      onUpdateAllPlayers: handleUpdateAllPlayers,
       onUpdatePlayerReady: handleUpdateRoomPlayerReady,
       onAddPlayer: handleAddPalyerToRoom,
       onRemovePlayer: handleRemovePlayerFromRoom,
@@ -61,7 +68,7 @@ const useWaitingRoomPart = () => {
     return () => {
       listener();
     };
-  }, [handleAddPalyerToRoom, handleRemovePlayerFromRoom, handleUpdateRoomPlayerReady, roomId, user]);
+  }, [roomId, user]);
 
   useEffect(() => {
     ItoSocket.sendUserReady({
@@ -73,6 +80,9 @@ const useWaitingRoomPart = () => {
   useEffect(() => {
     if(queried.room) {
       setRoom(queried.room);
+      socket.emit(SOCKET_EVENT.USER_ACTION, {
+        userActionType: USER_ACTION.GET_ALL_PLAYERS_READY
+      });
     }
   }, [queried.room]);
 

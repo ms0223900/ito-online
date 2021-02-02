@@ -23,6 +23,10 @@ export interface PlayerUpdateReadyPayload {
   userId: string
   isReady: boolean
 }
+export interface UpdateAllPlayersPayload {
+  gameStatus: GameStatusTypes.UPDATE_ALL_USERS
+  users: SingleUser[]
+}
 export interface AddPlayerPayload {
   gameStatus: GameStatusTypes.ADD_PLAYER
   user: SingleUser
@@ -33,20 +37,24 @@ export interface RemovePlayerPayload {
 }
 export type GameStatusPayload = 
   PlayerUpdateReadyPayload |
+  UpdateAllPlayersPayload |
   AddPlayerPayload | 
   RemovePlayerPayload 
 
 const ItoSocket = {
   onListenGameStatus({
-    onAddPlayer, onRemovePlayer, onUpdatePlayerReady,
+    onAddPlayer, onRemovePlayer, onUpdatePlayerReady, onUpdateAllPlayers,
   }: {
     onRemovePlayer?: Callback
     onAddPlayer?: Callback
     onUpdatePlayerReady?: Callback
+    onUpdateAllPlayers?: Callback
   }) {
     socket.on(SOCKET_EVENT.GAME_STATUS, (payload: GameStatusPayload) => {
       if(payload) {
         switch (payload.gameStatus) {
+          case GameStatusTypes.UPDATE_ALL_USERS:
+            return onUpdateAllPlayers && onUpdateAllPlayers(payload);
           case GameStatusTypes.ADD_PLAYER:
             return onAddPlayer && onAddPlayer(payload);
           case GameStatusTypes.UPDATE_READY:

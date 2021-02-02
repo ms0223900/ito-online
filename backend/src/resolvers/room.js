@@ -62,7 +62,7 @@ const updateRoom = async (_, payload, ctx) => {
 
     switch (type) {
     case 'REMOVE_PLAYER': {
-      newUsers = newUsers.filter(p => p.id !== user.id);  
+      newUsers = newUsers.filter(p => (p.id !== user.id) || p._id !== user.id);  
     }
     case 'ADD_PLAYER': {
       newUsers.push(user);
@@ -71,7 +71,7 @@ const updateRoom = async (_, payload, ctx) => {
       break;
     }
 
-    room.users = newusers;
+    room.users = newUsers;
     await room.save();
     return room;
   } else {

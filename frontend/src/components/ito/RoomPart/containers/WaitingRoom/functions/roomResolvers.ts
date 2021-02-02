@@ -1,8 +1,12 @@
 import { SingleRoom } from "common-types";
-import { AddPlayerPayload, PlayerUpdateReadyPayload, RemovePlayerPayload } from "constants/itoSocket";
+import { AddPlayerPayload, PlayerUpdateReadyPayload, RemovePlayerPayload, UpdateAllPlayersPayload } from "constants/itoSocket";
+
+export interface State {
+  room: SingleRoom | undefined
+}
 
 const roomResolvers = {
-  udpateRoomUser: (state: { room: SingleRoom | undefined, }, payload: PlayerUpdateReadyPayload) => {
+  udpateRoomUser: (state: State, payload: PlayerUpdateReadyPayload) => {
     const { room: _room, } = state;
     const { userId, isReady, } = payload;
 
@@ -16,13 +20,31 @@ const roomResolvers = {
           ..._players[playerIdx],
           isReady,
         };
-        return _room;
+        const newRoom = {
+          ..._room,
+          users: _players,
+        };
+        return newRoom;
       }
     }
     return _room;
   },
 
-  addPlayer(state: { room: SingleRoom | undefined, }, payload: AddPlayerPayload) {
+  updateRoomAllUsers: (state: State, payload: UpdateAllPlayersPayload) => {
+    const { room: _room, } = state;
+    const { users, } = payload;
+    if(!_room) {
+      return _room;
+    } else {
+      let newRoom = {
+        ..._room,
+        users,
+      };
+      return newRoom;
+    }
+  },
+
+  addPlayer(state: State, payload: AddPlayerPayload) {
     const { room: _room, } = state;
     const {
       user,
@@ -41,7 +63,7 @@ const roomResolvers = {
     }
   },
 
-  removePlayer(state: { room: SingleRoom | undefined, }, payload: RemovePlayerPayload) {
+  removePlayer(state: State, payload: RemovePlayerPayload) {
     const { room, } = state;
     if(!room) {
       return room;

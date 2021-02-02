@@ -78,6 +78,10 @@ class GameSocket {
           }
           console.log(allAreReady);
         }
+        case USER_ACTION.GET_ALL_PLAYERS_READY: {
+          // 給sender目前room最新狀態
+          this.sendAllPlayerReady(socket);
+        }
         default:
           break;
         }
@@ -107,6 +111,14 @@ class GameSocket {
       isReady 
     });
   }
+  sendAllPlayerReady(socket) {
+    // 只傳給sender
+    socket.emit(SOCKET_EVENT.GAME_STATUS, {
+      gameStatus: GAME_STATUS.UPDATE_READY,
+      users: this.game.players,
+    });
+  }
+
   sendAddPlayer({ user, }) {
     this.sendAllInRoom({
       gameStatus: GAME_STATUS.ADD_PLAYER,
@@ -119,6 +131,7 @@ class GameSocket {
       userId,
     });
   }
+
   sendGameStart() {
     this.game.getQuestionAndCard()
       .then(payload => {
@@ -167,6 +180,7 @@ class GamesManager {
       console.log(gameRoom);
       if(gameRoom) {
         // update room
+        // 給所有人通知
         gameRoom.game.addPlayer(user);
         gameRoom.sendAddPlayer({ user, });
         updateRoomCb && updateRoomCb({
