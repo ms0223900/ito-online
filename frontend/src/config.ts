@@ -3,6 +3,7 @@ import { GameStatus } from "common-types";
 export enum SOCKET_EVENT {
   ADD_COUNT = 'ADD_COUNT',
   JOIN_ROOM = 'JOIN_ROOM',
+  LEAVE_ROOM = 'LEAVE_ROOM',
   ROOM_MES = 'ROOM_MES',
   GAME_STATUS = 'GAME_STATUS',
   USER_ACTION = 'USER_ACTION',

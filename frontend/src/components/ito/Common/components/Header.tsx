@@ -1,13 +1,17 @@
 import React from 'react';
 import { Box, Divider, Grid, Typography } from '@material-ui/core';
-import BackButton from './BackButton';
+import BackButton, { BackButtonProps } from './BackButton';
 
-const Header = () => {
+export interface HeaderProps extends BackButtonProps {
+  
+}
+
+const Header = (props: HeaderProps) => {
   return (
     <Box>
       <Grid container>
         <Grid item xs={2}>
-          <BackButton />
+          <BackButton {...props} />
         </Grid>
         <Grid xs={10}>
           <Typography variant={'h4'}>

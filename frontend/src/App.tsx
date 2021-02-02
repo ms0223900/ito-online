@@ -11,6 +11,7 @@ import RoomPartContainer from 'components/ito/RoomPart/containers/RoomPartContai
 import CreateRoomPartContainer from 'components/ito/Forms/containers/CreateRoomPartContainer';
 import Header from 'components/ito/Common/components/Header';
 import WaitingRoomPartContainer from 'components/ito/RoomPart/containers/WaitingRoom/WaitingRoomPartContainer';
+import HeaderContainer from 'components/ito/Common/containers/HeaderContainer';
 
 export const socket = io(API_URI);
 
@@ -80,7 +81,7 @@ function App() {
 
   return (
     <Container className={classes.root}>
-      <Header />
+      <HeaderContainer />
       <Switch>
         <Route
           exact

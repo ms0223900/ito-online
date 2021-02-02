@@ -67,6 +67,11 @@ const useWaitingRoomPart = () => {
     });
     return () => {
       listener();
+      console.log('leave room');
+      ItoSocket.sendUserLeaveRoom({
+        roomId,
+        userId: user.id,
+      });
     };
   }, [roomId, user]);
 
@@ -97,7 +102,7 @@ const useWaitingRoomPart = () => {
 
   return ({
     isReady,
-    loading: queried.loading,
+    loading: false,
     room,
     playerListData,
     handleSetReady,

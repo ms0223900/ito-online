@@ -48,12 +48,13 @@ class GameSocket {
     this.gameStatus = gameStatus;
     this.io = io;
     this.game = new ItoGame({});
+    this.removeListenerCb = undefined;
     firstUser && this.game.addPlayer(firstUser);
   }
 
   initGame(socket, io) {
     this.io = io;
-    this.onListenUserActions(socket);
+    this.removeListenerCb = this.onListenUserActions(socket);
   }
 
   onListenUserActions(socket, actions) {
@@ -113,10 +114,12 @@ class GameSocket {
   }
   sendAllPlayerReady(socket) {
     // 只傳給sender
-    socket.emit(SOCKET_EVENT.GAME_STATUS, {
-      gameStatus: GAME_STATUS.UPDATE_READY,
+    const payload = {
+      gameStatus: GAME_STATUS.UPDATE_ALL_USERS,
       users: this.game.players,
-    });
+    };
+    // socket.emit(SOCKET_EVENT.GAME_STATUS, payload);
+    this.sendAllInRoom(payload);
   }
 
   sendAddPlayer({ user, }) {
@@ -211,6 +214,8 @@ class GamesManager {
       if(gameRoom) {
         const players = gameRoom.game.removePlayer(userId);
         gameRoom.sendRemovePlayer({ userId, });
+        gameRoom.removeListenerCb && gameRoom.removeListenerCb();
+        
         if(players.length === 0) {
           // 刪掉該房間
           this.gameRooms = this.gameRooms.filter(g => g.roomId !== roomId);

@@ -90,12 +90,26 @@ class Player {
         player.setPlayerState(roomId, user.id);
         gamesManager
           .enterGame(io, socket, { roomId, user, })((payload) => {
-            updateRoom({}, payload);
+            // updateRoom({}, payload);
           })
           .then(res => {
             res.initGame(socket, io);
           });
         // console.log(gamesManager);
+      }
+    });
+    socket.on(SOCKET_EVENT.LEAVE_ROOM, e => {
+      if(e && e.userId && e.roomId) {
+        console.log(player, ' leave room.');
+        gamesManager.handlePlayerExit(e.roomId, e.userId)(
+          // (payload) => {
+          //   deleteRoom({}, payload);
+          // },
+          undefined, 
+          (payload) => {
+            updateRoom({}, payload);
+          }
+        );
       }
     });
 

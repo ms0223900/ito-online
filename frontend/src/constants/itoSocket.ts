@@ -14,6 +14,10 @@ export interface UserJoinRoomPayload {
   roomId: string
   user: SingleUser
 }
+export interface UserLeaveRoomPayload {
+  roomId: string
+  userId: string
+}
 
 export interface BasicGameStatusPayload {
   gameStatus: GameStatusKeys
@@ -51,6 +55,7 @@ const ItoSocket = {
     onUpdateAllPlayers?: Callback
   }) {
     socket.on(SOCKET_EVENT.GAME_STATUS, (payload: GameStatusPayload) => {
+      console.log(payload);
       if(payload) {
         switch (payload.gameStatus) {
           case GameStatusTypes.UPDATE_ALL_USERS:
@@ -88,6 +93,13 @@ const ItoSocket = {
       user,
     });
   },
+
+  sendUserLeaveRoom({ roomId, userId, }: UserLeaveRoomPayload) {
+    socket.emit(SOCKET_EVENT.LEAVE_ROOM, {
+      roomId,
+      userId,
+    });
+  }
 };
 
 export default ItoSocket;
