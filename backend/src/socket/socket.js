@@ -186,11 +186,6 @@ class GamesManager {
         // 給所有人通知
         gameRoom.game.addPlayer(user);
         gameRoom.sendAddPlayer({ user, });
-        updateRoomCb && updateRoomCb({
-          type: 'ADD_PLAYER',
-          roomId,
-          user,
-        });
       } else {
         const newGameRoom = new GameSocket({
           io,
@@ -201,6 +196,11 @@ class GamesManager {
         this.gameRooms.push(newGameRoom);
         gameRoom = newGameRoom;
       }
+      updateRoomCb && updateRoomCb({
+        type: 'ADD_PLAYER',
+        roomId,
+        user,
+      });
       gameRoom.sendEnterMes({ roomId, user, });
     
       return gameRoom;

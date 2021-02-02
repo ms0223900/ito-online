@@ -25,7 +25,7 @@ const useRoomPart = () => {
     fetched.responseData.map(r => ({
       // --todo--要把資料庫的players改掉
       room: r,
-      playersAmount: r.users ? r.users.length : (r as any).players.length,
+      playersAmount: r.users.length,
     }))
   ), [fetched.responseData]);
 

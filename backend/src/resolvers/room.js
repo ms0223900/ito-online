@@ -61,17 +61,26 @@ const updateRoom = async (_, payload, ctx) => {
     switch (type) {
     case 'REMOVE_PLAYER': {
       const filtered = room.users.filter(p => (p.id !== user.id));
-      console.log(filtered);
-      // room.users = room.users.filter(p => (p.id !== user.id));  
+      console.log('Filtered users: ', filtered);
+      room.users = filtered;
+      await room.save();
+      break;
     }
     case 'ADD_PLAYER': {
-      // room.users.push(user);
+      // room.users = [...room.users, user];
+      await Room.model.updateOne(
+        { _id: roomId, },
+        { $push: { users: user, }, },
+      );
+      const newRoom = await Room.model.findById(roomId);
+      console.log('Player added room: ', newRoom);
+      return newRoom;
     }
     default:
       break;
     }
 
-    await room.save();
+    // await room.users.insertOne();
     return room;
   } else {
     throw new Error('Room not found.');

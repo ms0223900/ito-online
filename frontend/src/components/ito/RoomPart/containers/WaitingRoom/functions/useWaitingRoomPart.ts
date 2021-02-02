@@ -84,7 +84,12 @@ const useWaitingRoomPart = () => {
 
   useEffect(() => {
     if(queried.room) {
-      setRoom(queried.room);
+      setRoom(r => queried.room ? ({
+        ...r,
+        id: queried.room?.id,
+        name: queried.room?.name,
+      }) as any : r);
+
       socket.emit(SOCKET_EVENT.USER_ACTION, {
         userActionType: USER_ACTION.GET_ALL_PLAYERS_READY
       });
@@ -92,7 +97,7 @@ const useWaitingRoomPart = () => {
   }, [queried.room]);
 
   const playerListData: PlayerItemProps[] = useMemo(() => (
-    room ? (room.users || (room as any).players).map(p => ({
+    room ? room.users.map(p => ({
       ...p,
       isReady: !!(p.isReady),
       isMe: p.id === user.id,

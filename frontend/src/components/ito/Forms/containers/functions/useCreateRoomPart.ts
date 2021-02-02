@@ -6,6 +6,10 @@ import useInput from "lib/custom-hooks/useInput";
 import { useCallback, useContext, useEffect } from "react";
 import { useHistory } from "react-router";
 
+export const getRandomRoomName = () => (
+  `room-${~~(Math.random() * 100000)}`
+);
+
 const useCreateRoomPart = () => {
   const {
     state: {
@@ -30,7 +34,7 @@ const useCreateRoomPart = () => {
       fetched.fetchData({
         postForm: {
           type: 'CREATE',
-          name: value,
+          name: value || getRandomRoomName(),
           user,
         }
       });
