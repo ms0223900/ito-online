@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, Button, Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { PlayAreaProps } from './types';
+import CTAButton from 'components/ito/Common/components/CTAButton';
 
 const PlayArea = (props: PlayAreaProps) => {
   return (
@@ -17,12 +18,12 @@ const PlayArea = (props: PlayAreaProps) => {
           </Typography>
         )}
       </Box>
-      <Button
+      <CTAButton
         disabled={!props.cardNumberNow}
         onClick={props.onPlayCard}
       >
-        {'Play Card!'}
-      </Button>
+        {'Play Card'}
+      </CTAButton>
     </Box>
   );
 };

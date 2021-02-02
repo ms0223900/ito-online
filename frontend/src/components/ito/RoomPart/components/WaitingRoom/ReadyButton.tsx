@@ -1,12 +1,12 @@
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
 import { ReadyButtonProps } from './types';
+import CTAButton from 'components/ito/Common/components/CTAButton';
 
 const ReadyButton = (props: ReadyButtonProps) => {
   return (
-    <Button onClick={props.onReady}>
+    <CTAButton onClick={props.onReady}>
       {props.isPlayerReady ? 'Waiting for others...' : 'Ready'}
-    </Button>
+    </CTAButton>
   );
 };
 

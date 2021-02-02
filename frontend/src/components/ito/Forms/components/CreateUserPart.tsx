@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, Button, TextField } from '@material-ui/core';
+import { Box, TextField } from '@material-ui/core';
 import { CreateUserPartProps } from './types';
+import CTAButton from 'components/ito/Common/components/CTAButton';
 
 const CreateUserPart = (props: CreateUserPartProps) => {
   return (
@@ -10,11 +11,9 @@ const CreateUserPart = (props: CreateUserPartProps) => {
         variant={'outlined'}
         placeholder={'Input user name...'}
       />
-      <Button
-        onClick={props.onCreateUser}
-      >
+      <CTAButton onClick={props.onCreateUser}>
         {'Create User'}
-      </Button>
+      </CTAButton>
     </Box>
   );
 };

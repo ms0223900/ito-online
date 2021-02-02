@@ -15,12 +15,15 @@ declare module "common-types" {
 
   interface GameStatus {
     READY: string
-    UPDATE_READY: string
     START: string
     CONTINUED: string
     PASS: string
     OVER: string
     ERROR: string
+
+    UPDATE_READY: string
+    ADD_PLAYER: string
+    REMOVE_PLAYER: string
   }
   type GameStatusKeys = keyof GameStatus
 }

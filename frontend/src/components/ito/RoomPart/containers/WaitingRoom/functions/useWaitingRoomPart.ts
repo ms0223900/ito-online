@@ -3,7 +3,7 @@ import { socket } from "App";
 import { SingleRoom } from "common-types";
 import { PlayerItemProps } from "components/ito/RoomPart/components/WaitingRoom/types";
 import { initItoState } from "constants/context";
-import ItoSocket, { PlayerUpdateReadyPayload } from "constants/itoSocket";
+import ItoSocket, { AddPlayerPayload, PlayerUpdateReadyPayload, RemovePlayerPayload } from "constants/itoSocket";
 import { RouterParams } from "constants/ROUTES";
 import useToggle from "lib/custom-hooks/useToggle";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -32,12 +32,16 @@ const resolvers = {
     return _room;
   },
 
-  addPlayer() {
+  addPlayer(state: { room: SingleRoom | undefined, }, payload: AddPlayerPayload) {
 
+    const { room: _room, } = state;
+    return _room;
   },
 
-  removePlayer() {
+  removePlayer(state: { room: SingleRoom | undefined, }, payload: RemovePlayerPayload) {
 
+    const { room: _room, } = state;
+    return _room;
   },
 };
 
@@ -65,6 +69,16 @@ const useWaitingRoomPart = () => {
       resolvers.udpateRoomUser({ room: _room, }, payload)
     ));
   }, []);
+  const handleAddPalyerToRoom = useCallback((payload: AddPlayerPayload) => {
+    setRoom(_room => (
+      resolvers.addPlayer({ room: _room, }, payload)
+    ));
+  }, []);
+  const handleRemovePlayerFromRoom = useCallback((payload: RemovePlayerPayload) => {
+    setRoom(_room => (
+      resolvers.removePlayer({ room: _room, }, payload)
+    ));
+  }, []);
 
   useEffect(() => {
     // 加入該房間
@@ -73,11 +87,15 @@ const useWaitingRoomPart = () => {
       roomId,
     });
     // 取得房間最新狀態
-    const listener = ItoSocket.listenPlayerReadyUpdate(handleUpdateRoomPlayerReady);
+    const listener = ItoSocket.onListenGameStatus({
+      onUpdatePlayerReady: handleUpdateRoomPlayerReady,
+      onAddPlayer: handleAddPalyerToRoom,
+      onRemovePlayer: handleRemovePlayerFromRoom,
+    });
     return () => {
       listener();
     };
-  }, [handleUpdateRoomPlayerReady, roomId, user]);
+  }, [handleAddPalyerToRoom, handleRemovePlayerFromRoom, handleUpdateRoomPlayerReady, roomId, user]);
 
   useEffect(() => {
     ItoSocket.sendUserReady({

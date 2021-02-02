@@ -11,13 +11,28 @@ export enum SOCKET_EVENT {
 
 export const GAME_STATUS: GameStatus = {
   READY: 'READY',
-  UPDATE_READY: 'UPDATE_READY',
   START: 'START',
   CONTINUED: 'CONTINUED',
   PASS: 'PASS',
   OVER: 'OVER',
   ERROR: 'ERROR',
+
+  UPDATE_READY: 'UPDATE_READY',
+  ADD_PLAYER: 'ADD_PLAYER',
+  REMOVE_PLAYER: 'REMOVE_PLAYER',
 };
+export enum GameStatusTypes {
+  READY,
+  START,
+  CONTINUED,
+  PASS,
+  OVER,
+  ERROR,
+
+  UPDATE_READY,
+  ADD_PLAYER,
+  REMOVE_PLAYER,
+}
 
 export enum USER_ACTION {
   PLAY_CARD = 'PLAY_CARD',
