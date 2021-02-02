@@ -32,7 +32,7 @@ class ItoGame {
 
   init() {
     this.cardsOnDesk = [];
-    this.players = [];
+    this.users = [];
     this.life = this.initLife;
     this.latestCard = Infinity;
   }
@@ -46,14 +46,14 @@ class ItoGame {
   }
   addPlayer(user) {
     const player = this.getInitPlayer(user);
-    this.players = [
-      ...this.players,
+    this.users = [
+      ...this.users,
       player,
     ];
   }
   removePlayer(userId='') {
-    this.players = this.players.filter(p => p.id !== userId);
-    return this.players;
+    this.users = this.users.filter(p => p.id !== userId);
+    return this.users;
   }
 
   makeRandomCards(cardAmount=100) {
@@ -106,10 +106,10 @@ class ItoGame {
   }
 
   checkPlayersAmountdFulfill() {
-    return this.players.length > this.minPlayersAmount;
+    return this.users.length > this.minPlayersAmount;
   }
   checkAllPlayerAreReady() {
-    return this.players.every(p => p.isReady);
+    return this.users.every(p => p.isReady);
   }
   checkPlayersReadyAndFulfill() {
     return (this.checkPlayersAmountdFulfill() && this.checkAllPlayerAreReady());
@@ -118,14 +118,14 @@ class ItoGame {
     isReady=false,
     userId='',
   }) {
-    const playerIdx = this.players.findIndex(p => p.id === userId);
+    const playerIdx = this.users.findIndex(p => p.id === userId);
     if(playerIdx !== -1) {
-      this.players[playerIdx].isReady = isReady;
+      this.users[playerIdx].isReady = isReady;
     }
   }
 
   checkThisRoundPassed() {
-    const allCardsPlayed = this.players.every(p => p.isCardPlayed);
+    const allCardsPlayed = this.users.every(p => p.isCardPlayed);
     return allCardsPlayed;
   }
 
@@ -149,12 +149,12 @@ class ItoGame {
         message: 'question-not-found',
       });
     } else {
-      const cardsAmount = this.players.length;
+      const cardsAmount = this.users.length;
       const cards = this.getSomeCards(cardsAmount);
 
       const playerCardAndQuestionList = cards.map((card, i) => ({
         gameStatus: GAME_STATUS.START,
-        player: this.players[i],
+        player: this.users[i],
         question,
         card,
       }));

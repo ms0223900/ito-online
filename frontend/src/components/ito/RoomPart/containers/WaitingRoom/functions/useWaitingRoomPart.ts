@@ -1,6 +1,6 @@
 import useQueryRoom from "api/custom-hooks/useQueryRoom";
 import { socket } from "App";
-import { SingleRoom } from "common-types";
+import { SingleRoom, SingleUser } from "common-types";
 import { PlayerItemProps } from "components/ito/RoomPart/components/WaitingRoom/types";
 import { SOCKET_EVENT, USER_ACTION } from "config";
 import { initItoState } from "constants/context";
@@ -26,6 +26,7 @@ const useWaitingRoomPart = () => {
   } = useToggle(false);
   const queried = useQueryRoom({ roomId, });
   const [room, setRoom] = useState<SingleRoom>();
+  const [users, setUsers] = useState<SingleUser[]>([]);
 
   const handleSetReady = useCallback(() => {
     handleToggle();
@@ -37,9 +38,7 @@ const useWaitingRoomPart = () => {
     ));
   }, []);
   const handleUpdateAllPlayers = useCallback((payload: UpdateAllPlayersPayload) => {
-    setRoom(_room => (
-      roomResolvers.updateRoomAllUsers({ room: _room, }, payload)
-    ));
+    setUsers(payload.users);
   }, []);
   const handleAddPalyerToRoom = useCallback((payload: AddPlayerPayload) => {
     setRoom(_room => (
@@ -47,8 +46,8 @@ const useWaitingRoomPart = () => {
     ));
   }, []);
   const handleRemovePlayerFromRoom = useCallback((payload: RemovePlayerPayload) => {
-    setRoom(_room => (
-      roomResolvers.removePlayer({ room: _room, }, payload)
+    setUsers(users => (
+      roomResolvers.removePlayer({ users, }, payload)
     ));
   }, []);
 
@@ -84,12 +83,7 @@ const useWaitingRoomPart = () => {
 
   useEffect(() => {
     if(queried.room) {
-      setRoom(r => queried.room ? ({
-        ...r,
-        id: queried.room?.id,
-        name: queried.room?.name,
-      }) as any : r);
-
+      setRoom(queried.room);
       socket.emit(SOCKET_EVENT.USER_ACTION, {
         userActionType: USER_ACTION.GET_ALL_PLAYERS_READY
       });
@@ -97,13 +91,13 @@ const useWaitingRoomPart = () => {
   }, [queried.room]);
 
   const playerListData: PlayerItemProps[] = useMemo(() => (
-    room ? room.users.map(p => ({
+    users.map(p => ({
       ...p,
       isReady: !!(p.isReady),
       isMe: p.id === user.id,
       playerName: p.name || p.id,
-    })) : []
-  ), [room, user.id]);
+    }))
+  ), [users, user.id]);
 
   return ({
     isReady,

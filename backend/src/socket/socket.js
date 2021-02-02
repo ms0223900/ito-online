@@ -103,7 +103,7 @@ class GameSocket {
   sendPlayerReady({ userId, isReady }) {
     // 送全部
     // this.sendAllInRoom({
-    //   players: this.game.players,
+    //   users: this.game.users,
     // });
     // 送一個
     this.sendAllInRoom({
@@ -116,7 +116,7 @@ class GameSocket {
     // 只傳給sender
     const payload = {
       gameStatus: GAME_STATUS.UPDATE_ALL_USERS,
-      users: this.game.players,
+      users: this.game.users,
     };
     // socket.emit(SOCKET_EVENT.GAME_STATUS, payload);
     this.sendAllInRoom(payload);
@@ -147,7 +147,7 @@ class GameSocket {
   makeEnterMes({ roomId, user, }) {
     return ({
       gameStatus: GAME_STATUS.READY,
-      players: this.game.players,
+      users: this.game.users,
       message: `${getUserName(user)} successfully enter room: ${roomId}`
     });
   }
@@ -212,7 +212,7 @@ class GamesManager {
       const gameRoom = this.findGameRoom(roomId);
 
       if(gameRoom) {
-        const players = gameRoom.game.removePlayer(userId);
+        const users = gameRoom.game.removePlayer(userId);
         gameRoom.sendRemovePlayer({ userId, });
         gameRoom.removeListenerCb && gameRoom.removeListenerCb();
         
@@ -222,7 +222,7 @@ class GamesManager {
           user: { id: userId, },
         });
         
-        if(players.length === 0) {
+        if(users.length === 0) {
           // 先不刪掉該房間
           this.gameRooms = this.gameRooms.filter(g => g.roomId !== roomId);
           console.log(this.gameRooms);

@@ -1,4 +1,4 @@
-import { SingleRoom } from "common-types";
+import { SingleRoom, SingleUser } from "common-types";
 import { AddPlayerPayload, PlayerUpdateReadyPayload, RemovePlayerPayload, UpdateAllPlayersPayload } from "constants/itoSocket";
 
 export interface State {
@@ -11,8 +11,8 @@ const roomResolvers = {
     const { userId, isReady, } = payload;
 
     if(_room) {
-      const players = _room.users;
-      let _players = [...players];
+      const users = _room.users;
+      let _players = [...users];
       const playerIdx = _players.findIndex(p => p.id === userId);
 
       if(playerIdx !== -1) {
@@ -63,21 +63,13 @@ const roomResolvers = {
     }
   },
 
-  removePlayer(state: State, payload: RemovePlayerPayload) {
-    const { room, } = state;
-    if(!room) {
-      return room;
-    } else {
-      const {
-        userId
-      } = payload;
-
-      const newRoom = {
-        ...room,
-        users: room.users.filter(u => u.id !== userId)
-      };
-      return newRoom;
-    }
+  removePlayer(state: { users: SingleUser[], }, payload: RemovePlayerPayload) {
+    const { users, } = state;
+    const {
+      userId,
+    } = payload;
+    const newUsers = users.filter(u => u.id !== userId);
+    return newUsers;
   },
 };
 

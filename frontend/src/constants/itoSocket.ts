@@ -39,6 +39,10 @@ export interface RemovePlayerPayload {
   gameStatus: GameStatusTypes.REMOVE_PLAYER
   userId: string
 }
+export interface GameStartPayload {
+  gameStatus: GameStatusTypes.START
+}
+
 export type GameStatusPayload = 
   PlayerUpdateReadyPayload |
   UpdateAllPlayersPayload |

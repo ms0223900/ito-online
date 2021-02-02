@@ -73,6 +73,7 @@ const updateRoom = async (_, payload, ctx) => {
         { $push: { users: user, }, },
       );
       const newRoom = await Room.model.findById(roomId);
+      await newRoom.save();
       console.log('Player added room: ', newRoom);
       return newRoom;
     }

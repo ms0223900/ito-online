@@ -1,16 +1,24 @@
 import React from 'react';
-import { Box, ListItem, Typography } from '@material-ui/core';
+import { Box, ListItem, makeStyles, Typography } from '@material-ui/core';
 import { RoomItemProps } from './types';
 import { AccountCircle } from '@material-ui/icons';
 import { Link } from 'react-router-dom';
 import ROUTES from 'constants/ROUTES';
 import { replaceRouterParamsRegExp } from 'constants/regExps';
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    textDecoration: 'none',
+    color: '#111',
+  }
+}));
+
 const RoomItem = (props: RoomItemProps) => {
+  const classes = useStyles();
   const linkTo = ROUTES.room.replace(replaceRouterParamsRegExp, props.room.id);
   
   return (
-    <Link to={linkTo}>
+    <Link className={classes.root} to={linkTo}>
       <ListItem button divider>
         <Box
           width={'100%'}
