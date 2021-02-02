@@ -26,4 +26,15 @@ declare module "common-types" {
     REMOVE_PLAYER: string
   }
   type GameStatusKeys = keyof GameStatus
+
+  interface GameLifeStatus {
+    lifeNow: number
+    maxLife: number
+  }
+  interface GamePlayingStatus {
+    isPlaying: boolean
+    life: GameLifeStatus
+    latestCard: number
+    myCardNow: number | null
+  }
 }

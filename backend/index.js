@@ -89,7 +89,7 @@ class Player {
         player.setPlayerState(roomId, user.id);
         gamesManager
           .enterGame(io, socket, { roomId, user, })((payload) => {
-            // updateRoom({}, payload);
+            updateRoom({}, payload);
           })
           .then(res => {
             res.initGame(socket, io);

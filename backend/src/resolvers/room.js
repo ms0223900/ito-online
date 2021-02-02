@@ -1,4 +1,5 @@
 const Room = require('../model/Room');
+const { ObjectID, } = require('mongodb');
 
 const mockRooms = [
   {
@@ -67,13 +68,12 @@ const updateRoom = async (_, payload, ctx) => {
       break;
     }
     case 'ADD_PLAYER': {
-      // room.users = [...room.users, user];
       await Room.model.updateOne(
-        { _id: roomId, },
+        { _id: ObjectID(roomId), },
         { $push: { users: user, }, },
+        { upsert: true, }
       );
       const newRoom = await Room.model.findById(roomId);
-      await newRoom.save();
       console.log('Player added room: ', newRoom);
       return newRoom;
     }
