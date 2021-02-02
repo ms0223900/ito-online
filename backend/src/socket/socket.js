@@ -180,7 +180,7 @@ class GamesManager {
     return async (updateRoomCb,) => {
       SocketRoom.enterRoom(socket)(roomId);
       let gameRoom = this.findGameRoom(roomId);
-      console.log(gameRoom);
+      // console.log(gameRoom);
       if(gameRoom) {
         // update room
         // 給所有人通知
@@ -216,12 +216,18 @@ class GamesManager {
         gameRoom.sendRemovePlayer({ userId, });
         gameRoom.removeListenerCb && gameRoom.removeListenerCb();
         
+        updateRoomCb && updateRoomCb({
+          type: 'REMOVE_PLAYER',
+          roomId,
+          user: { id: userId, },
+        });
+        
         if(players.length === 0) {
-          // 刪掉該房間
+          // 先不刪掉該房間
           this.gameRooms = this.gameRooms.filter(g => g.roomId !== roomId);
           console.log(this.gameRooms);
           // update db
-          removeRoomCb && removeRoomCb({ roomId, });
+          // removeRoomCb && removeRoomCb({ roomId, });
         } else {
           updateRoomCb && updateRoomCb({
             type: 'REMOVE_PLAYER',

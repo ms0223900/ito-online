@@ -31,6 +31,7 @@ async function fetchDataByAPI<DefaultRes>({
       ...fetchPostInit,
       ...requestInit,
     });
+    console.log(fetchPostInit);
     const res_1 = await res.json();
     return res_1;
   } catch (rej) {

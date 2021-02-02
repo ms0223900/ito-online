@@ -57,21 +57,20 @@ const updateRoom = async (_, payload, ctx) => {
     if(!user) {
       throw new Error('User not input');
     }
-    const users = room.users;
-    let newUsers = [...users];
 
     switch (type) {
     case 'REMOVE_PLAYER': {
-      newUsers = newUsers.filter(p => (p.id !== user.id) || p._id !== user.id);  
+      const filtered = room.users.filter(p => (p.id !== user.id));
+      console.log(filtered);
+      // room.users = room.users.filter(p => (p.id !== user.id));  
     }
     case 'ADD_PLAYER': {
-      newUsers.push(user);
+      // room.users.push(user);
     }
     default:
       break;
     }
 
-    room.users = newUsers;
     await room.save();
     return room;
   } else {

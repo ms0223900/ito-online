@@ -9,7 +9,7 @@ export interface UseFetchOptions<Res> extends Omit<FetchDataByAPIOptions<Res>, '
 }
 
 export default function useFetch<T>({
-  apiPath, initResponseData, requestInit, fetchFn,
+  apiPath, initResponseData, requestInit, fetchFn, isPostMethod,
 }: UseFetchOptions<T>) {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setErr] = useState();
@@ -26,6 +26,7 @@ export default function useFetch<T>({
         ...requestInit,
         ...params,
       },
+      isPostMethod,
       postForm: params.postForm,
     });
 
@@ -41,7 +42,7 @@ export default function useFetch<T>({
       .finally(() => {
         setLoading(false);
       });
-  }, [apiPath, fetchFn, initResponseData, requestInit]);
+  }, [apiPath, fetchFn, initResponseData, requestInit, isPostMethod]);
 
   return {
     loading,

@@ -1,23 +1,27 @@
+import { SingleRoom } from "common-types";
 import { CREATE_ROOM_URI } from "constants/API";
+import ContextStore from "constants/context";
 import useFetch from "lib/custom-hooks/useFetch";
 import useInput from "lib/custom-hooks/useInput";
-import { useCallback } from "react";
-
-const mockUser = {
-  id: '11',
-  name: 'aabb',
-};
+import { useCallback, useContext, useEffect } from "react";
+import { useHistory } from "react-router";
 
 const useCreateRoomPart = () => {
+  const {
+    state: {
+      user,
+    },
+  } = useContext(ContextStore);
+  const history = useHistory();
   const {
     value,
     handleChangeInput,
   } = useInput({
     initValue: '',
   });
-  const fetched = useFetch({
+  const fetched = useFetch<SingleRoom | undefined>({
     apiPath: CREATE_ROOM_URI,
-    initResponseData: {},
+    initResponseData: undefined,
     isPostMethod: true,
   });
 
@@ -27,13 +31,18 @@ const useCreateRoomPart = () => {
         postForm: {
           type: 'CREATE',
           name: value,
-          user: mockUser,
+          user,
         }
       });
     } catch (error) {
       console.log(error);
     };
-  }, [value]);
+  }, [fetched, value, user]);
+
+  useEffect(() => {
+    fetched.responseData && 
+    history.push('/room/' + (fetched.responseData as any)._id);
+  }, [fetched.responseData]);
 
   return ({
     value,

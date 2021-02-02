@@ -78,7 +78,6 @@ class Player {
 
     // init
     socket.on(SOCKET_EVENT.JOIN_ROOM, e => {
-      console.log(e);
       if(e && e.roomId && e.user) {
         const {
           roomId, user,

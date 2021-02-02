@@ -4,11 +4,14 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { ContextWrapper } from 'constants/context';
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter basename={process.env.PUBLIC_URL}>
-      <App />
+      <ContextWrapper>
+        <App />
+      </ContextWrapper>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

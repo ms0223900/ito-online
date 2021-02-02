@@ -1,4 +1,7 @@
 import { SingleUser } from "common-types";
+import { combineReducers } from "react-function-helpers";
+import { createContextStore, createContextValueFn } from 'react-function-helpers/lib/functions/contextHelpers';
+import ContextWrapperFn from "react-function-helpers/lib/functions/ContextWrapper";
 
 export interface ItoState {
   user: SingleUser
@@ -12,3 +15,12 @@ export const initItoState: ItoState = {
   }
 };
 
+const reducers = combineReducers<ItoState>({
+  user: s => s.user,
+});
+
+export const ContextValue = createContextValueFn(initItoState, reducers);
+const ContextStore = createContextStore(initItoState);
+
+export default ContextStore;
+export const ContextWrapper = ContextWrapperFn(ContextValue, ContextStore);
