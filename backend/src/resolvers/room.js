@@ -18,7 +18,7 @@ const getRooms = async () => {
       id: r._id,
       _id: r._id,
       name: r.name,
-      players: r.players.map(u => u ? {
+      users: r.users.map(u => u ? {
         _id: u._id,
         name: u.name,
         id: u.id,
@@ -42,7 +42,7 @@ const getRoom = async (_, { roomId, }) => {
 const createRoom = async (_, { firstUser, name, }, ctx) => {
   const newRoom = new Room.model({
     name,
-    players: [firstUser],
+    users: [firstUser],
   });
   console.log('New room:', newRoom);
   const room = await newRoom.save();
@@ -57,21 +57,21 @@ const updateRoom = async (_, payload, ctx) => {
     if(!user) {
       throw new Error('User not input');
     }
-    const players = room.players;
-    let newPlayers = [...players];
+    const users = room.users;
+    let newUsers = [...users];
 
     switch (type) {
     case 'REMOVE_PLAYER': {
-      newPlayers = newPlayers.filter(p => p.id !== user.id);  
+      newUsers = newUsers.filter(p => p.id !== user.id);  
     }
     case 'ADD_PLAYER': {
-      newPlayers.push(user);
+      newUsers.push(user);
     }
     default:
       break;
     }
 
-    room.players = newPlayers;
+    room.users = newusers;
     await room.save();
     return room;
   } else {

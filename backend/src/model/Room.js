@@ -5,7 +5,7 @@ const {
 
 const schema = new Schema({
   name: String,
-  players: [
+  users: [
     userSchema,
   ]
 });
