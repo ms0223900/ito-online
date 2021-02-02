@@ -8,70 +8,14 @@ import { RouterParams } from "constants/ROUTES";
 import useToggle from "lib/custom-hooks/useToggle";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
-
-const resolvers = {
-  udpateRoomUser: (state: { room: SingleRoom | undefined, }, payload: PlayerUpdateReadyPayload) => {
-    const { room: _room, } = state;
-    const { userId, isReady, } = payload;
-
-    if(_room) {
-      const players = _room.users;
-      let _players = [...players];
-      const playerIdx = _players.findIndex(p => p.id === userId);
-
-      if(playerIdx !== -1) {
-        _players[playerIdx] = {
-          ..._players[playerIdx],
-          isReady,
-        };
-        return _room;
-      }
-    }
-    return _room;
-  },
-
-  addPlayer(state: { room: SingleRoom | undefined, }, payload: AddPlayerPayload) {
-    const { room: _room, } = state;
-    const {
-      user,
-    } = payload;
-    if(!_room) {
-      return _room;
-    } else {
-      let newRoom = {
-        ..._room,
-        users: [
-          ..._room.users,
-          user,
-        ]
-      };
-      return newRoom;
-    }
-  },
-
-  removePlayer(state: { room: SingleRoom | undefined, }, payload: RemovePlayerPayload) {
-    const { room, } = state;
-    if(!room) {
-      return room;
-    } else {
-      const {
-        userId
-      } = payload;
-
-      const newRoom = {
-        ...room,
-        users: room.users.filter(u => u.id !== userId)
-      };
-      return newRoom;
-    }
-  },
-};
+import roomResolvers from "./roomResolvers";
 
 const useWaitingRoomPart = () => {
-  // --todo from ctx--
+  // --todo user from ctx--
   const {
     user
   } = initItoState;
+
   const {
     roomId,
   } = useParams<RouterParams>();
@@ -88,17 +32,17 @@ const useWaitingRoomPart = () => {
 
   const handleUpdateRoomPlayerReady = useCallback((payload: PlayerUpdateReadyPayload) => {
     setRoom(_room => (
-      resolvers.udpateRoomUser({ room: _room, }, payload)
+      roomResolvers.udpateRoomUser({ room: _room, }, payload)
     ));
   }, []);
   const handleAddPalyerToRoom = useCallback((payload: AddPlayerPayload) => {
     setRoom(_room => (
-      resolvers.addPlayer({ room: _room, }, payload)
+      roomResolvers.addPlayer({ room: _room, }, payload)
     ));
   }, []);
   const handleRemovePlayerFromRoom = useCallback((payload: RemovePlayerPayload) => {
     setRoom(_room => (
-      resolvers.removePlayer({ room: _room, }, payload)
+      roomResolvers.removePlayer({ room: _room, }, payload)
     ));
   }, []);
 
@@ -133,7 +77,7 @@ const useWaitingRoomPart = () => {
   }, [queried.room]);
 
   const playerListData: PlayerItemProps[] = useMemo(() => (
-    room ? room.users.map(p => ({
+    room ? (room.users || (room as any).players).map(p => ({
       ...p,
       isReady: !!(p.isReady),
       isMe: p.id === user.id,

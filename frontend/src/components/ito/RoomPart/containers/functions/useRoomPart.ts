@@ -23,8 +23,9 @@ const useRoomPart = () => {
 
   const roomListData: RoomItemData[] = useMemo(() => (
     fetched.responseData.map(r => ({
+      // --todo--要把資料庫的players改掉
       room: r,
-      playersAmount: r.players.length,
+      playersAmount: r.users ? r.users.length : (r as any).players.length,
     }))
   ), [fetched.responseData]);
 

@@ -45,17 +45,20 @@ const ItoSocket = {
     onUpdatePlayerReady?: Callback
   }) {
     socket.on(SOCKET_EVENT.GAME_STATUS, (payload: GameStatusPayload) => {
-      switch (payload.gameStatus) {
-        case GameStatusTypes.ADD_PLAYER:
-          return onAddPlayer && onAddPlayer(payload);
-        case GameStatusTypes.UPDATE_READY:
-          return onUpdatePlayerReady && onUpdatePlayerReady(payload);
-        case GameStatusTypes.REMOVE_PLAYER:
-          return onRemovePlayer && onRemovePlayer(payload);
-        default:
-          break;
+      if(payload) {
+        switch (payload.gameStatus) {
+          case GameStatusTypes.ADD_PLAYER:
+            return onAddPlayer && onAddPlayer(payload);
+          case GameStatusTypes.UPDATE_READY:
+            return onUpdatePlayerReady && onUpdatePlayerReady(payload);
+          case GameStatusTypes.REMOVE_PLAYER:
+            return onRemovePlayer && onRemovePlayer(payload);
+          default:
+            break;
+        }
       }
     });
+    
     return () => socket.off(SOCKET_EVENT.GAME_STATUS);
   },
 

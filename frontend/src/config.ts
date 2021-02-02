@@ -22,16 +22,16 @@ export const GAME_STATUS: GameStatus = {
   REMOVE_PLAYER: 'REMOVE_PLAYER',
 };
 export enum GameStatusTypes {
-  READY,
-  START,
-  CONTINUED,
-  PASS,
-  OVER,
-  ERROR,
+  READY = 'READY',
+  START = 'START',
+  CONTINUED = 'CONTINUED',
+  PASS = 'PASS',
+  OVER = 'OVER',
+  ERROR = 'ERROR',
 
-  UPDATE_READY,
-  ADD_PLAYER,
-  REMOVE_PLAYER,
+  UPDATE_READY = 'UPDATE_READY',
+  ADD_PLAYER = 'ADD_PLAYER',
+  REMOVE_PLAYER = 'REMOVE_PLAYER',
 }
 
 export enum USER_ACTION {

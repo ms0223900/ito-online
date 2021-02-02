@@ -107,6 +107,18 @@ class GameSocket {
       isReady 
     });
   }
+  sendAddPlayer({ user, }) {
+    this.sendAllInRoom({
+      gameStatus: GAME_STATUS.ADD_PLAYER,
+      user,
+    });
+  }
+  sendRemovePlayer({ userId, }) {
+    this.sendAllInRoom({
+      gameStatus: GAME_STATUS.REMOVE_PLAYER,
+      userId,
+    });
+  }
   sendGameStart() {
     this.game.getQuestionAndCard()
       .then(payload => {
@@ -156,17 +168,13 @@ class GamesManager {
       if(gameRoom) {
         // update room
         gameRoom.game.addPlayer(user);
+        gameRoom.sendAddPlayer({ user, });
         updateRoomCb && updateRoomCb({
           type: 'ADD_PLAYER',
           roomId,
           user,
         });
       } else {
-        // 資料的create不在這邊
-        // const newRoom = await createRoom({}, {
-        //   firstUser: user,
-        // });
-        // create new room
         const newGameRoom = new GameSocket({
           io,
           socket,
@@ -188,6 +196,7 @@ class GamesManager {
 
       if(gameRoom) {
         const players = gameRoom.game.removePlayer(userId);
+        gameRoom.sendRemovePlayer({ userId, });
         if(players.length === 0) {
           // 刪掉該房間
           this.gameRooms = this.gameRooms.filter(g => g.roomId !== roomId);
