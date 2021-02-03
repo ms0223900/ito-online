@@ -17,7 +17,7 @@ const LifeList = (props: LifeListProps) => {
   ), [props]);
 
   return (
-    <Box padding={1}>
+    <Box padding={1} display={'flex'}>
       {lifeListData.map((l, i) => (
         <LifeItem key={i} {...l} />
       ))}

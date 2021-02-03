@@ -159,14 +159,14 @@ class GameSocket {
     this.sendAllInRoom(payload);
   }
 
-  sendCardComparedResult({ userId, cardNumber, }) {
-    const res = this.game.compareCard({ userId, cardNumber, });
+  sendCardComparedResult({ user, cardNumber, }) {
+    const res = this.game.compareCard({ user, cardNumber, });
     if(res.gameStatus === GAME_STATUS.PASS || 
       res.gameStatus === GAME_STATUS.OVER
     ) {
       this.game.init();
     }
-    this.sendAllInRoom(res, SOCKET_EVENT.COMPARED_RESULT);
+    this.sendAllInRoom(res);
   }
 }
 

@@ -22,7 +22,9 @@ const PlayArea = (props: PlayAreaProps) => {
         disabled={!props.cardNumberNow}
         onClick={props.onPlayCard}
       >
-        {'Play Card'}
+        <Typography>
+          {'Play Card'}
+        </Typography>
       </CTAButton>
     </Box>
   );

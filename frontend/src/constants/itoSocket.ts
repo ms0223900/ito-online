@@ -1,8 +1,9 @@
 
-import { Callback, GameStatus, GameStatusKeys, SingleUser } from 'common-types';
+import { Callback, GamePlayingStatus, GameStatus, GameStatusKeys, PlayedResult, SingleUser } from 'common-types';
 import { GAME_STATUS, SOCKET_EVENT, USER_ACTION, GameStatusTypes } from 'config';
 import { io } from 'socket.io-client';
 import { API_URI } from './API';
+import { ItoState } from './context';
 
 export const socket = io(API_URI);
 
@@ -17,6 +18,10 @@ export interface UserJoinRoomPayload {
 export interface UserLeaveRoomPayload {
   roomId: string
   userId: string
+}
+export interface UserPlayCardPayload {
+  userId: string
+  cardNumber: GamePlayingStatus['myCardNow']
 }
 
 export interface BasicGameStatusPayload {
@@ -43,23 +48,33 @@ export interface GameStartPayload {
   gameStatus: GameStatusTypes.START
   // 來自socket的需要再作轉換
 }
+export interface UpdatePlayerLifePayload {
+  gameStatus: GameStatusTypes.UPDATE_LIFE
+  latestLife: number
+}
+export interface UpdatePlayedResultPayload {
+  gameStatus: GameStatusTypes.SET_PLAYED_RESULT
+  playedResult: PlayedResult
+}
 
 export type GameStatusPayload = 
   PlayerUpdateReadyPayload |
   UpdateAllPlayersPayload |
   AddPlayerPayload | 
   RemovePlayerPayload |
-  GameStartPayload
+  GameStartPayload |
+  UpdatePlayerLifePayload
 
 const ItoSocket = {
   onListenGameStatus({
-    onAddPlayer, onRemovePlayer, onUpdatePlayerReady, onUpdateAllPlayers, onGameStart,
+    onAddPlayer, onRemovePlayer, onUpdatePlayerReady, onUpdateAllPlayers, onGameStart, onUpdateLife,
   }: {
     onRemovePlayer?: Callback
     onAddPlayer?: Callback
     onUpdatePlayerReady?: Callback
     onUpdateAllPlayers?: Callback
     onGameStart?: Callback
+    onUpdateLife?: (payload: UpdatePlayerLifePayload) => any
   }) {
     socket.on(SOCKET_EVENT.GAME_STATUS, (payload: GameStatusPayload) => {
       console.log(payload);
@@ -76,6 +91,8 @@ const ItoSocket = {
           case GameStatusTypes.START: {
             return onGameStart && onGameStart(payload);
           }
+          case GameStatusTypes.UPDATE_LIFE:
+            return onUpdateLife && onUpdateLife(payload);
           default:
             break;
         }
@@ -109,7 +126,18 @@ const ItoSocket = {
       roomId,
       userId,
     });
-  }
+  },
+
+  sendPlayCard({ userId, cardNumber, }: UserPlayCardPayload) {
+    if(cardNumber) {
+      socket.emit(SOCKET_EVENT.USER_ACTION, ({
+        userId,
+        cardNumber, 
+      }));
+      return true;
+    }
+    return false;
+  },
 };
 
 export default ItoSocket;

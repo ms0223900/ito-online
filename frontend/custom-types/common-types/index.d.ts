@@ -31,7 +31,8 @@ declare module "common-types" {
   }
   type GameStatusKeys = keyof GameStatus
 
-  export type PlayedResultType = 'FAIL' | 'SUCCESS' | 'GAME_OVER'
+  export type PlayedResultType = 
+    'FAIL' | 'SUCCESS' | 'GAME_OVER' | 'CONTINUED'
 
   interface GameLifeStatus {
     lifeNow: number
@@ -65,4 +66,8 @@ declare module "common-types" {
   type GamePlayingStatusFromSocketPayload = 
     SuccessGamePlayingStatusPayload |
     FailedGamePlayingStatusPayload
+
+  interface PlayedResult {
+    
+  }
 }

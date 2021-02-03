@@ -67,13 +67,20 @@ class ItoGame {
   getCompareCardResult(card=0) {
     return this.latestCard > card;
   }
-  compareCard(card) {
+  compareCard({
+    user, cardNumber,
+  }) {
     let payload = {
       gameStatus: GAME_STATUS.CONTINUED,
     };
 
     const isSuccess = this.getCompareCardResult(card);
-    this.latestCard = card;
+
+    const continuedPayload = {
+      user,
+      cardNumber,
+      latestCard: this.latestCard,
+    };
     if(isSuccess) {
       const thisRoundPassed = this.checkThisRoundPassed();
       this.passedRounds += 1;
@@ -85,7 +92,8 @@ class ItoGame {
       } else {
         payload = ({
           gameStatus: GAME_STATUS.CONTINUED,
-          life: this.life,
+          life: this.life, // life 直接在server端算完
+          ...continuedPayload,
         });
       }
     } else {
@@ -94,6 +102,7 @@ class ItoGame {
         payload = ({
           gameStatus: GAME_STATUS.CONTINUED,
           life: this.life,
+          ...continuedPayload,
         });
       } else {
         payload = ({
@@ -102,6 +111,8 @@ class ItoGame {
         });
       }
     }
+    // update latest card
+    this.latestCard = card;
     return payload;
   }
 

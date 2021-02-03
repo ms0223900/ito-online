@@ -3,6 +3,7 @@ import { GamePlayingStatusState } from "constants/context";
 
 export enum ActionTypes {
   SET_GAME_PLAYING_STATUS,
+  UPDATE_GAME_PLAYING_STATUS,
   RESET_GAME_PLAYING_STATUS,
 
   SET_USER,

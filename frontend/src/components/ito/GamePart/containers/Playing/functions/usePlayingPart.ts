@@ -1,7 +1,10 @@
+import { setGamePlayingStatus } from "actions";
 import { PlayedResultPayload, PlayingPartProps } from "components/ito/GamePart/components/Playing/types";
 import ContextStore from "constants/context";
+import ItoSocket from "constants/itoSocket";
 import useToggle from "lib/custom-hooks/useToggle";
-import { useCallback, useContext, useMemo, useState } from "react";
+import { send } from "process";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 const usePlayingPart = () => {
   const {
@@ -11,18 +14,44 @@ const usePlayingPart = () => {
 
   const {
     state: {
+      user,
       gamePlayingStatus,
-    }
+    },
+    dispatch,
   } = useContext(ContextStore);
 
   const [playedResult, setPlayedResult] = useState<PlayedResultPayload>();
+  const [lifeNow, setLife] = useState();
 
   const handlePlayCard = useCallback(() => {
-
-  }, []);
+    if(gamePlayingStatus.status) {
+      const sender = ItoSocket.sendPlayCard({
+        userId: user.id,
+        cardNumber: gamePlayingStatus.status.myCardNow,
+      });
+      
+      sender && dispatch(setGamePlayingStatus({
+        ...gamePlayingStatus,
+        status: {
+          ...gamePlayingStatus.status,
+          myCardNow: null
+        }
+      }));
+    }
+  }, [dispatch, gamePlayingStatus, user.id]);
 
   const handleCloseResult = useCallback(() => {
     handleCloseToggle();
+  }, []);
+
+  useEffect(() => {
+    // 取得最新卡片比較結果、愛心
+    const listener = ItoSocket.onListenGameStatus({
+
+    });
+    return () => {
+      listener();
+    };
   }, []);
 
   const playingPartProps: PlayingPartProps | undefined = useMemo(() => {
