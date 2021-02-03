@@ -151,12 +151,18 @@ class ItoGame {
     } else {
       const cardsAmount = this.users.length;
       const cards = this.getSomeCards(cardsAmount);
+      const life = {
+        lifeNow: this.life,
+        maxLife: this.initLife,
+      };
 
       const playerCardAndQuestionList = cards.map((card, i) => ({
         gameStatus: GAME_STATUS.START,
         player: this.users[i],
         question,
+        latestCard: this.latestCard,
         card,
+        life,
       }));
 
       const payload = {

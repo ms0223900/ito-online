@@ -1,3 +1,4 @@
+import { setGamePlayingStatus, SetGamePlayingStatusPayload } from "actions";
 import useQueryRoom from "api/custom-hooks/useQueryRoom";
 import { socket } from "App";
 import { SingleRoom, SingleUser } from "common-types";
@@ -12,7 +13,7 @@ import { useParams } from "react-router";
 import roomResolvers from "./roomResolvers";
 
 export interface UseWaitingRoomPartOptions {
-  setGamePlayingStatusToCtx: (payload: ) => any
+  setGamePlayingStatusToCtx: typeof setGamePlayingStatus
 }
 
 const useWaitingRoomPart = ({
@@ -56,8 +57,9 @@ const useWaitingRoomPart = ({
       roomResolvers.removePlayer({ users, }, payload)
     ));
   }, []);
-  const handleGameStart = useCallback((payload: ) => {
-    setGamePlayingStatusToCtx(payload)
+  const handleGameStart = useCallback((payload: SetGamePlayingStatusPayload) => {
+    // 轉為user自己的
+    setGamePlayingStatusToCtx(payload);
   }, []);
 
   useEffect(() => {

@@ -41,6 +41,7 @@ export interface RemovePlayerPayload {
 }
 export interface GameStartPayload {
   gameStatus: GameStatusTypes.START
+  // 來自socket的需要再作轉換
 }
 
 export type GameStatusPayload = 
@@ -72,8 +73,9 @@ const ItoSocket = {
             return onUpdatePlayerReady && onUpdatePlayerReady(payload);
           case GameStatusTypes.REMOVE_PLAYER:
             return onRemovePlayer && onRemovePlayer(payload);
-          case GameStatusTypes.START:
+          case GameStatusTypes.START: {
             return onGameStart && onGameStart(payload);
+          }
           default:
             break;
         }

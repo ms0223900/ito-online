@@ -3,10 +3,6 @@ import ContextStore from "constants/context";
 import useToggle from "lib/custom-hooks/useToggle";
 import { useCallback, useContext, useMemo, useState } from "react";
 
-// export interface PlayingPartWithoutCallback extends Omit<PlayingPartProps, 'onPlayCard'> {
-  
-// }
-
 const usePlayingPart = () => {
   const {
     toggle: isResultOpen,

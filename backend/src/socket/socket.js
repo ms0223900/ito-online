@@ -72,6 +72,7 @@ class GameSocket {
           const { isReady, userId, } = e;
           this.game.setPlayerReady({ isReady, userId, });
           const allAreReady = this.game.checkPlayersReadyAndFulfill();
+          
           if(allAreReady) {
             this.sendGameStart();
           } else {

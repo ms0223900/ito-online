@@ -44,4 +44,23 @@ declare module "common-types" {
     latestCard: number
     myCardNow: number | null
   }
+
+  type GamePlayingStatusFromSocket = SuccessGamePlayingStatusFromSocket
+
+  interface SinglePlayerCardAndQuestion {
+    player: SingleUser
+    question: { content: string }
+    life: GameLifeStatus
+    card: number
+    latestCard: number
+  }
+  interface SuccessGamePlayingStatusFromSocket {
+    gameStatus: GameStatus['START']
+    message: string
+
+  }
+  interface FailedGamePlayingStatusFromSocket {
+    gameStatus: GameStatus['ERROR']
+    message: string
+  }
 }
