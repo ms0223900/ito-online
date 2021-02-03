@@ -9,6 +9,7 @@ import RoomPartContainer from 'components/ito/RoomPart/containers/RoomPartContai
 import CreateRoomPartContainer from 'components/ito/Forms/containers/CreateRoomPartContainer';
 import WaitingRoomPartContainer from 'components/ito/RoomPart/containers/WaitingRoom/WaitingRoomPartContainer';
 import HeaderContainer from 'components/ito/Common/containers/HeaderContainer';
+import PlayingPartContainer from 'components/ito/GamePart/containers/Playing/PlayingPartContainer';
 
 export const socket = io(API_URI);
 
@@ -38,6 +39,10 @@ function App() {
         <Route 
           path={ROUTES.room}
           component={WaitingRoomPartContainer}
+        />
+        <Route 
+          path={ROUTES.playing}
+          component={PlayingPartContainer}
         />
         <Route 
           path={ROUTES.createUser}

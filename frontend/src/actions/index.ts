@@ -1,4 +1,5 @@
 import { GamePlayingStatus, SingleUser } from "common-types";
+import { GamePlayingStatusState } from "constants/context";
 
 export enum ActionTypes {
   SET_GAME_PLAYING_STATUS,
@@ -8,7 +9,7 @@ export enum ActionTypes {
   RESET_USER,
 }
 
-export interface SetGamePlayingStatusPayload extends GamePlayingStatus {
+export interface SetGamePlayingStatusPayload extends GamePlayingStatusState {
   
 }
 export interface SetGamePlayingStatus {

@@ -1,15 +1,16 @@
 import { setGamePlayingStatus, SetGamePlayingStatusPayload } from "actions";
 import useQueryRoom from "api/custom-hooks/useQueryRoom";
 import { socket } from "App";
-import { SingleRoom, SingleUser } from "common-types";
+import { GamePlayingStatusFromSocketPayload, SingleRoom, SingleUser } from "common-types";
 import { PlayerItemProps } from "components/ito/RoomPart/components/WaitingRoom/types";
 import { SOCKET_EVENT, USER_ACTION } from "config";
-import { initItoState } from "constants/context";
+import ContextStore, { initItoState } from "constants/context";
 import ItoSocket, { AddPlayerPayload, PlayerUpdateReadyPayload, RemovePlayerPayload, UpdateAllPlayersPayload } from "constants/itoSocket";
-import { RouterParams } from "constants/ROUTES";
+import ROUTES, { RouterParams } from "constants/ROUTES";
 import useToggle from "lib/custom-hooks/useToggle";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useHistory, useParams } from "react-router";
+import makeGamePlayingPayload from "./makeGamePlayingPayload";
 import roomResolvers from "./roomResolvers";
 
 export interface UseWaitingRoomPartOptions {
@@ -19,14 +20,18 @@ export interface UseWaitingRoomPartOptions {
 const useWaitingRoomPart = ({
   setGamePlayingStatusToCtx,
 }: UseWaitingRoomPartOptions) => {
-  // --todo user from ctx--
   const {
-    user
-  } = initItoState;
+    state: {
+      user,
+      gamePlayingStatus,
+    }
+  } = useContext(ContextStore);
 
   const {
     roomId,
   } = useParams<RouterParams>();
+  const history = useHistory();
+
   const {
     toggle: isReady,
     handleToggle,
@@ -57,10 +62,14 @@ const useWaitingRoomPart = ({
       roomResolvers.removePlayer({ users, }, payload)
     ));
   }, []);
-  const handleGameStart = useCallback((payload: SetGamePlayingStatusPayload) => {
+  const handleGameStart = useCallback((payload: GamePlayingStatusFromSocketPayload) => {
+    console.log(payload);
     // 轉為user自己的
-    setGamePlayingStatusToCtx(payload);
-  }, []);
+    const ctxPayload = makeGamePlayingPayload(user, payload);
+
+    setGamePlayingStatusToCtx(ctxPayload as any);
+    history.push(ROUTES.playing);
+  }, [setGamePlayingStatusToCtx, user]);
 
   useEffect(() => {
     // 加入該房間

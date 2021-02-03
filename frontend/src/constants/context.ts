@@ -4,9 +4,14 @@ import { createContextStore, createContextValueFn } from 'react-function-helpers
 import ContextWrapperFn from "react-function-helpers/lib/functions/ContextWrapper";
 import reducers from "reducers";
 
+export interface GamePlayingStatusState {
+  message: string
+  status: GamePlayingStatus | null
+}
+
 export interface ItoState {
   user: SingleUser
-  gamePlayingStatus: GamePlayingStatus | null
+  gamePlayingStatus: GamePlayingStatusState
 }
 const userId = ~~(Math.random() * 100000);
 export const initItoState: ItoState = {
@@ -15,7 +20,10 @@ export const initItoState: ItoState = {
     // id: '',
     name: 'Mock User ' + userId
   },
-  gamePlayingStatus: null,
+  gamePlayingStatus: {
+    message: '',
+    status: null,
+  },
 };
 
 export const ContextValue = createContextValueFn(initItoState, reducers);

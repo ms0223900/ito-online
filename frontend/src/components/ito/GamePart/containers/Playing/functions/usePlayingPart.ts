@@ -25,19 +25,22 @@ const usePlayingPart = () => {
     handleCloseToggle();
   }, []);
 
-  const playingPartProps: PlayingPartProps | undefined = useMemo(() => (
-    gamePlayingStatus ? ({
-      ...gamePlayingStatus.question,
-      isResultOpen,
-      cardNumberNow: gamePlayingStatus.myCardNow,
-      latestCardNumber: gamePlayingStatus.latestCard,
-      maxLife: gamePlayingStatus.life.maxLife,
-      remainLife: gamePlayingStatus.life.lifeNow,
-      resultPayload: playedResult,
-      onCloseResult: handleCloseResult,
-      onPlayCard: handlePlayCard,
-    }) as PlayingPartProps : undefined
-  ), [gamePlayingStatus, handleCloseResult, handlePlayCard, isResultOpen, playedResult]);
+  const playingPartProps: PlayingPartProps | undefined = useMemo(() => {
+    const { status } = gamePlayingStatus;
+    return (
+      status ? ({
+        ...status.question,
+        isResultOpen,
+        cardNumberNow: status.myCardNow,
+        latestCardNumber: status.latestCard,
+        maxLife: status.life.maxLife,
+        remainLife: status.life.lifeNow,
+        resultPayload: playedResult,
+        onCloseResult: handleCloseResult,
+        onPlayCard: handlePlayCard,
+      }) as PlayingPartProps : undefined
+    );
+  }, [gamePlayingStatus, handleCloseResult, handlePlayCard, isResultOpen, playedResult]);
 
   return ({
     playingPartProps

@@ -3,10 +3,10 @@ const ThemeQuestion = require("../model/ThemeQuestion.js");
 
 const mockQuestions = [
   {
-    content: 'Are you...?',
+    content: '各種天氣現象的「不舒適」程度。',
   },
   {
-    content: 'Hello World?',
+    content: 'Onepiece角色的強弱程度。',
   }
 ];
 

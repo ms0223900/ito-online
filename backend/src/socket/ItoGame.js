@@ -106,7 +106,7 @@ class ItoGame {
   }
 
   checkPlayersAmountdFulfill() {
-    return this.users.length > this.minPlayersAmount;
+    return this.users.length >= this.minPlayersAmount;
   }
   checkAllPlayerAreReady() {
     return this.users.every(p => p.isReady);
@@ -141,7 +141,7 @@ class ItoGame {
 
   async getQuestionAndCard() {
     const question = await getRandomThemeQuestion();
-    console.log(questions);
+    console.log(question);
 
     if(!question) {
       return ({

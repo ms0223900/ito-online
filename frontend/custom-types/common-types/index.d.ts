@@ -18,16 +18,16 @@ declare module "common-types" {
   }
 
   interface GameStatus {
-    READY: string
-    START: string
-    CONTINUED: string
-    PASS: string
-    OVER: string
-    ERROR: string
+    READY: 'READY'
+    START: 'START'
+    CONTINUED: 'CONTINUED'
+    PASS: 'PASS'
+    OVER: 'OVER'
+    ERROR: 'ERROR'
 
-    UPDATE_READY: string
-    ADD_PLAYER: string
-    REMOVE_PLAYER: string
+    UPDATE_READY: 'UPDATE_READY'
+    ADD_PLAYER: 'ADD_PLAYER'
+    REMOVE_PLAYER: 'REMOVE_PLAYER'
   }
   type GameStatusKeys = keyof GameStatus
 
@@ -45,8 +45,6 @@ declare module "common-types" {
     myCardNow: number | null
   }
 
-  type GamePlayingStatusFromSocket = SuccessGamePlayingStatusFromSocket
-
   interface SinglePlayerCardAndQuestion {
     player: SingleUser
     question: { content: string }
@@ -54,13 +52,17 @@ declare module "common-types" {
     card: number
     latestCard: number
   }
-  interface SuccessGamePlayingStatusFromSocket {
+  interface SuccessGamePlayingStatusPayload {
     gameStatus: GameStatus['START']
     message: string
-
+    playerCardAndQuestionList: SinglePlayerCardAndQuestion[]
   }
-  interface FailedGamePlayingStatusFromSocket {
+  interface FailedGamePlayingStatusPayload {
     gameStatus: GameStatus['ERROR']
     message: string
   }
+
+  type GamePlayingStatusFromSocketPayload = 
+    SuccessGamePlayingStatusPayload |
+    FailedGamePlayingStatusPayload
 }

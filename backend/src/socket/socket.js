@@ -72,6 +72,7 @@ class GameSocket {
           const { isReady, userId, } = e;
           this.game.setPlayerReady({ isReady, userId, });
           const allAreReady = this.game.checkPlayersReadyAndFulfill();
+          console.log('All are ready: ', allAreReady);
           
           if(allAreReady) {
             this.sendGameStart();
@@ -139,6 +140,7 @@ class GameSocket {
   sendGameStart() {
     this.game.getQuestionAndCard()
       .then(payload => {
+        console.log('Game start.');
         this.sendAllInRoom(payload);
       })
       .catch(e => {
