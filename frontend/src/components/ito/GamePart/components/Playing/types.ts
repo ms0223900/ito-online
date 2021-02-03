@@ -1,4 +1,4 @@
-import { Callback } from "common-types";
+import { Callback, PlayedResultType } from "common-types";
 import { LifeListProps } from "../types";
 
 export interface ThemeQuestionProps {
@@ -12,12 +12,14 @@ export interface PlayAreaProps {
   onPlayCard: Callback
 }
 
+export interface PlayedResultPayload {
+  prevCardNumber: number
+  nextCardNumber: number
+  result: PlayedResultType
+}
+
 export interface PlayedResultProps {
-  resultPayload?: {
-    prevCardNumber: number
-    nextCardNumber: number
-    result: 'FAIL' | 'SUCCESS'
-  }
+  resultPayload?: PlayedResultPayload
   isResultOpen: boolean
   onCloseResult: Callback
 }

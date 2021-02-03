@@ -1,10 +1,12 @@
-import { SingleUser } from "common-types";
+import { GamePlayingStatus, SingleUser } from "common-types";
 import { combineReducers } from "react-function-helpers";
 import { createContextStore, createContextValueFn } from 'react-function-helpers/lib/functions/contextHelpers';
 import ContextWrapperFn from "react-function-helpers/lib/functions/ContextWrapper";
+import reducers from "reducers";
 
 export interface ItoState {
   user: SingleUser
+  gamePlayingStatus: GamePlayingStatus | null
 }
 const userId = ~~(Math.random() * 100000);
 export const initItoState: ItoState = {
@@ -12,12 +14,9 @@ export const initItoState: ItoState = {
     id: String(userId),
     // id: '',
     name: 'Mock User ' + userId
-  }
+  },
+  gamePlayingStatus: null,
 };
-
-const reducers = combineReducers<ItoState>({
-  user: s => s.user,
-});
 
 export const ContextValue = createContextValueFn(initItoState, reducers);
 const ContextStore = createContextStore(initItoState);

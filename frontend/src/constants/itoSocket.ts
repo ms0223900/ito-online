@@ -47,16 +47,18 @@ export type GameStatusPayload =
   PlayerUpdateReadyPayload |
   UpdateAllPlayersPayload |
   AddPlayerPayload | 
-  RemovePlayerPayload 
+  RemovePlayerPayload |
+  GameStartPayload
 
 const ItoSocket = {
   onListenGameStatus({
-    onAddPlayer, onRemovePlayer, onUpdatePlayerReady, onUpdateAllPlayers,
+    onAddPlayer, onRemovePlayer, onUpdatePlayerReady, onUpdateAllPlayers, onGameStart,
   }: {
     onRemovePlayer?: Callback
     onAddPlayer?: Callback
     onUpdatePlayerReady?: Callback
     onUpdateAllPlayers?: Callback
+    onGameStart?: Callback
   }) {
     socket.on(SOCKET_EVENT.GAME_STATUS, (payload: GameStatusPayload) => {
       console.log(payload);
@@ -70,6 +72,8 @@ const ItoSocket = {
             return onUpdatePlayerReady && onUpdatePlayerReady(payload);
           case GameStatusTypes.REMOVE_PLAYER:
             return onRemovePlayer && onRemovePlayer(payload);
+          case GameStatusTypes.START:
+            return onGameStart && onGameStart(payload);
           default:
             break;
         }

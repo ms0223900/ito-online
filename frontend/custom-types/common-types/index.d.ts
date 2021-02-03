@@ -1,4 +1,8 @@
+
+
 declare module "common-types" {
+  import { ThemeQuestionProps } from "components/ito/GamePart/components/Playing/types";
+  
   type Callback = (...args: any[]) => any;
   
   interface SingleUser {
@@ -27,11 +31,14 @@ declare module "common-types" {
   }
   type GameStatusKeys = keyof GameStatus
 
+  export type PlayedResultType = 'FAIL' | 'SUCCESS' | 'GAME_OVER'
+
   interface GameLifeStatus {
     lifeNow: number
     maxLife: number
   }
   interface GamePlayingStatus {
+    question: ThemeQuestionProps
     isPlaying: boolean
     life: GameLifeStatus
     latestCard: number

@@ -11,7 +11,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import roomResolvers from "./roomResolvers";
 
-const useWaitingRoomPart = () => {
+export interface UseWaitingRoomPartOptions {
+  setGamePlayingStatusToCtx: (payload: ) => any
+}
+
+const useWaitingRoomPart = ({
+  setGamePlayingStatusToCtx,
+}: UseWaitingRoomPartOptions) => {
   // --todo user from ctx--
   const {
     user
@@ -50,6 +56,9 @@ const useWaitingRoomPart = () => {
       roomResolvers.removePlayer({ users, }, payload)
     ));
   }, []);
+  const handleGameStart = useCallback((payload: ) => {
+    setGamePlayingStatusToCtx(payload)
+  }, []);
 
   useEffect(() => {
     // 加入該房間
@@ -63,6 +72,7 @@ const useWaitingRoomPart = () => {
       onUpdatePlayerReady: handleUpdateRoomPlayerReady,
       onAddPlayer: handleAddPalyerToRoom,
       onRemovePlayer: handleRemovePlayerFromRoom,
+      onGameStart: handleGameStart,
     });
     return () => {
       listener();

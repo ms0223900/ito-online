@@ -5,7 +5,7 @@ const ROUTES = {
   homepage: '/',
   rooms: '/rooms',
   room: '/room/:roomId',
-  
+  playing: '/playing',
 };
 
 export interface RouterParams {
