@@ -1,5 +1,5 @@
 
-import { Callback, GamePlayingStatus, GameStatus, GameStatusKeys, PlayedResult, SingleUser } from 'common-types';
+import { Callback, GamePlayingStatus, GameStatus, GameStatusKeys, ComparedPlayedResult, SingleUser, GamePlayingStatusFromSocketPayload, PlayedResultType } from 'common-types';
 import { GAME_STATUS, SOCKET_EVENT, USER_ACTION, GameStatusTypes } from 'config';
 import { io } from 'socket.io-client';
 import { API_URI } from './API';
@@ -44,17 +44,12 @@ export interface RemovePlayerPayload {
   gameStatus: GameStatusTypes.REMOVE_PLAYER
   userId: string
 }
-export interface GameStartPayload {
-  gameStatus: GameStatusTypes.START
-  // 來自socket的需要再作轉換
-}
-export interface UpdatePlayerLifePayload {
-  gameStatus: GameStatusTypes.UPDATE_LIFE
-  latestLife: number
-}
+export type GameStartPayload = GamePlayingStatusFromSocketPayload
 export interface UpdatePlayedResultPayload {
   gameStatus: GameStatusTypes.SET_PLAYED_RESULT
-  playedResult: PlayedResult
+  resultType: PlayedResultType
+  passedRounds: number
+  playedResult?: ComparedPlayedResult
 }
 
 export type GameStatusPayload = 
@@ -63,18 +58,18 @@ export type GameStatusPayload =
   AddPlayerPayload | 
   RemovePlayerPayload |
   GameStartPayload |
-  UpdatePlayerLifePayload
+  UpdatePlayedResultPayload
 
 const ItoSocket = {
   onListenGameStatus({
-    onAddPlayer, onRemovePlayer, onUpdatePlayerReady, onUpdateAllPlayers, onGameStart, onUpdateLife,
+    onAddPlayer, onRemovePlayer, onUpdatePlayerReady, onUpdateAllPlayers, onGameStart, onGetComparedResult,
   }: {
     onRemovePlayer?: Callback
     onAddPlayer?: Callback
     onUpdatePlayerReady?: Callback
     onUpdateAllPlayers?: Callback
-    onGameStart?: Callback
-    onUpdateLife?: (payload: UpdatePlayerLifePayload) => any
+    onGameStart?: (payload: GameStartPayload) => any
+    onGetComparedResult?: (payload: UpdatePlayedResultPayload) => any
   }) {
     socket.on(SOCKET_EVENT.GAME_STATUS, (payload: GameStatusPayload) => {
       console.log(payload);
@@ -91,8 +86,8 @@ const ItoSocket = {
           case GameStatusTypes.START: {
             return onGameStart && onGameStart(payload);
           }
-          case GameStatusTypes.UPDATE_LIFE:
-            return onUpdateLife && onUpdateLife(payload);
+          case GameStatusTypes.SET_PLAYED_RESULT:
+            return onGetComparedResult && onGetComparedResult(payload);
           default:
             break;
         }

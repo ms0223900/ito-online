@@ -1,5 +1,5 @@
 const {
-  GAME_STATUS,
+  GAME_STATUS, PLAYED_RESULT,
 } = require('../../config.js');
 const _ = require('lodash');
 const {
@@ -34,7 +34,7 @@ class ItoGame {
     this.cardsOnDesk = [];
     this.users = [];
     this.life = this.initLife;
-    this.latestCard = Infinity;
+    this.latestCard = Infinity; // 第一張卡一定沒問題
   }
 
   getInitPlayer(user) {
@@ -71,7 +71,9 @@ class ItoGame {
     user, cardNumber,
   }) {
     let payload = {
-      gameStatus: GAME_STATUS.CONTINUED,
+      gameStatus: GAME_STATUS.SET_PLAYED_RESULT,
+      resultType: PLAYED_RESULT.CONTINUED,
+      passedRounds: this.passedRounds,
     };
 
     const isSuccess = this.getCompareCardResult(card);
@@ -84,30 +86,37 @@ class ItoGame {
     if(isSuccess) {
       const thisRoundPassed = this.checkThisRoundPassed();
       this.passedRounds += 1;
+
       if(thisRoundPassed) {
-        payload = ({
-          gameStatus: GAME_STATUS.PASS,
-          passedRounds,
-        });
+        payload = {
+          ...payload,
+          passedRounds: this.passedRounds,
+        };
       } else {
         payload = ({
-          gameStatus: GAME_STATUS.CONTINUED,
-          life: this.life, // life 直接在server端算完
-          ...continuedPayload,
+          ...payload,
+          resultType: PLAYED_RESULT.CONTINUED,
+          playedResult: {
+            ...continuedPayload,
+            latestLife: this.life, // life 直接在server端算完
+          }
         });
       }
     } else {
       this.life = this.life - 1;
       if(this.life > 0) { 
         payload = ({
-          gameStatus: GAME_STATUS.CONTINUED,
-          life: this.life,
-          ...continuedPayload,
+          ...payload,
+          resultType: PLAYED_RESULT.FAIL,
+          playedResult: {
+            ...continuedPayload,
+            latestLife: this.life,
+          }
         });
       } else {
         payload = ({
-          gameStatus: GAME_STATUS.OVER,
-          passedRounds,
+          ...payload,
+          gameStatus: PLAYED_RESULT.GAME_OVER,
         });
       }
     }

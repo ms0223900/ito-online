@@ -6,6 +6,7 @@ import reducers from "reducers";
 
 export interface GamePlayingStatusState {
   message: string
+  roomId: string
   status: GamePlayingStatus | null
 }
 
@@ -22,6 +23,7 @@ export const initItoState: ItoState = {
   },
   gamePlayingStatus: {
     message: '',
+    roomId: '',
     status: null,
   },
 };

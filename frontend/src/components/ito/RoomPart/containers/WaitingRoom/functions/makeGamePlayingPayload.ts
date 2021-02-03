@@ -4,13 +4,19 @@ import { GAME_STATUS } from "config";
 
 const defaultPayload: SetGamePlayingStatusPayload = ({
   message: '',
+  roomId: '',
   status: null,
 });
 
-const makeGamePlayingPayload = (
-  user: SingleUser, 
+export interface MakeGamePlayingPayloadOptions {
+  user: SingleUser,
+  roomId: string,
   payloadFromSocket: GamePlayingStatusFromSocketPayload
-): SetGamePlayingStatusPayload => {
+}
+
+const makeGamePlayingPayload = ({
+  user, roomId, payloadFromSocket,
+}: MakeGamePlayingPayloadOptions): SetGamePlayingStatusPayload => {
   switch (payloadFromSocket.gameStatus) {
     case GAME_STATUS.START: {
       const {
@@ -37,12 +43,14 @@ const makeGamePlayingPayload = (
 
       return ({
         ...payloadFromSocket,
+        roomId,
         status,
       });
     }
     case GAME_STATUS.ERROR:
       return ({
         ...payloadFromSocket,
+        roomId,
         status: null,
       });
       

@@ -15,8 +15,16 @@ const GAME_STATUS_ACTION = {
   ADD_PLAYER: 'ADD_PLAYER',
   REMOVE_PLAYER: 'REMOVE_PLAYER',
   UPDATE_ALL_USERS: 'UPDATE_ALL_USERS',
+  SET_PLAYED_RESULT: 'SET_PLAYED_RESULT',
+};
+const PLAYED_RESULT = {
+  'FAIL': 'FAIL',
+  'SUCCESS': 'SUCCESS',
+  'GAME_OVER': 'GAME_OVER', 
+  'CONTINUED': 'CONTINUED',
 };
 const GAME_STATUS = {
+  ...PLAYED_RESULT,
   READY: 'READY',
   START: 'START',
   CONTINUED: 'CONTINUED',
@@ -36,6 +44,7 @@ module.exports = {
   SOCKET_EVENT,
   GAME_STATUS,
   USER_ACTION,
+  PLAYED_RESULT,
   MONGO_DB_CODE: 'mongodb+srv://test-merng:4pgdgWoS1NamoYd0@cluster0.zmfzq.mongodb.net/database?retryWrites=true&w=majority',
   SECRET_KEY: 'some-secret-key',
 };

@@ -65,11 +65,15 @@ const useWaitingRoomPart = ({
   const handleGameStart = useCallback((payload: GamePlayingStatusFromSocketPayload) => {
     console.log(payload);
     // 轉為user自己的
-    const ctxPayload = makeGamePlayingPayload(user, payload);
+    const ctxPayload = makeGamePlayingPayload({
+      user,
+      roomId,
+      payloadFromSocket: payload,
+    });
 
     setGamePlayingStatusToCtx(ctxPayload as any);
     history.push(ROUTES.playing);
-  }, [setGamePlayingStatusToCtx, user]);
+  }, [history, roomId, setGamePlayingStatusToCtx, user]);
 
   useEffect(() => {
     // 加入該房間
