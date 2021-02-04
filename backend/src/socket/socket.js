@@ -43,11 +43,14 @@ class GameSocket {
     io={},
     gameStatus=GAME_STATUS.READY,
     firstUser,
+    minPlayersAmount,
   }) {
     this.roomId = roomId;
     this.gameStatus = gameStatus;
     this.io = io;
-    this.game = new ItoGame({});
+    this.game = new ItoGame({
+      minPlayersAmount,
+    });
     this.removeListenerCb = undefined;
     firstUser && this.game.addPlayer(firstUser);
   }
@@ -179,7 +182,11 @@ class GamesManager {
     return this.gameRooms.find(r => r.roomId === roomId);
   }
   
-  enterGame(io, socket, { roomId, user, }) {
+  enterGame(io, socket, { 
+    roomId, 
+    user, 
+    minPlayersAmount,
+  }) {
     return async (updateRoomCb,) => {
       SocketRoom.enterRoom(socket)(roomId);
       let gameRoom = this.findGameRoom(roomId);
@@ -195,6 +202,7 @@ class GamesManager {
           socket,
           roomId,
           firstUser: user,
+          minPlayersAmount,
         });
         this.gameRooms.push(newGameRoom);
         gameRoom = newGameRoom;

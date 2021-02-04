@@ -6,9 +6,9 @@ function setObjPropertyByKeysAndValue<Obj extends {[key in Key]: any}>(originObj
   let property = undefined;
 
   for(let i = 0;i < keys.length - 1;i++) {
-    const key = keys[i];
-    if(obj[key]) {
-      property = obj[key]; // 到最後一個的前一個
+    const _key = keys[i];
+    if(obj[_key]) {
+      property = obj[_key]; // 到最後一個的前一個
     } else { break; }
   }
   if(property) { property[keys[keys.length - 1]] = newValue; }

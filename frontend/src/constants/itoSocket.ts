@@ -126,6 +126,7 @@ const ItoSocket = {
   sendPlayCard({ userId, cardNumber, }: UserPlayCardPayload) {
     if(cardNumber) {
       socket.emit(SOCKET_EVENT.USER_ACTION, ({
+        userActionType: USER_ACTION.PLAY_CARD,
         userId,
         cardNumber, 
       }));

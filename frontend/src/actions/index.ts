@@ -34,7 +34,7 @@ export const setGamePlayingStatus = (payload: SetGamePlayingStatusPayload) => ({
   payload,
 });
 export const updateGamePlayingStatus = (payload: UpdateGamePlayingStatusPayload) => ({
-  type: ActionTypes.SET_GAME_PLAYING_STATUS,
+  type: ActionTypes.UPDATE_GAME_PLAYING_STATUS,
   payload,
 });
 export const resetGamePlayingStatus = () => ({

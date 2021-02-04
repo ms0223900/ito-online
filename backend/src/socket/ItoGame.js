@@ -19,9 +19,9 @@ const initPlayer = {
 
 class ItoGame {
   constructor({
-    minPlayersAmount=3, // 最少遊玩人數
+    minPlayersAmount=2, // 最少遊玩人數
     initLife=3,
-    cardAmount=100
+    cardAmount=100,
   }) {
     this.minPlayersAmount = minPlayersAmount;
     this.initLife = initLife;
@@ -51,6 +51,9 @@ class ItoGame {
       player,
     ];
   }
+  findPlayer(userId='') {
+    return this.users.find(u => u.id === userId);
+  }
   removePlayer(userId='') {
     this.users = this.users.filter(p => p.id !== userId);
     return this.users;
@@ -61,8 +64,11 @@ class ItoGame {
     const res = _.shuffle(cards);
     return res;
   }
-  updateCard() {
-
+  updateUserCardPlayed(userId) {
+    const user = this.findPlayer(userId);
+    if(user) {
+      user.isCardPlayed = true;
+    }
   }
   getCompareCardResult(card=0) {
     return this.latestCard > card;
@@ -76,7 +82,7 @@ class ItoGame {
       passedRounds: this.passedRounds,
     };
 
-    const isSuccess = this.getCompareCardResult(card);
+    const isSuccess = this.getCompareCardResult(cardNumber);
 
     const continuedPayload = {
       user,
@@ -86,7 +92,7 @@ class ItoGame {
     if(isSuccess) {
       const thisRoundPassed = this.checkThisRoundPassed();
       this.passedRounds += 1;
-
+      // 這回合結束
       if(thisRoundPassed) {
         payload = {
           ...payload,
@@ -95,7 +101,7 @@ class ItoGame {
       } else {
         payload = ({
           ...payload,
-          resultType: PLAYED_RESULT.CONTINUED,
+          resultType: PLAYED_RESULT.SUCCESS,
           playedResult: {
             ...continuedPayload,
             latestLife: this.life, // life 直接在server端算完
@@ -104,6 +110,7 @@ class ItoGame {
       }
     } else {
       this.life = this.life - 1;
+      
       if(this.life > 0) { 
         payload = ({
           ...payload,
@@ -121,7 +128,7 @@ class ItoGame {
       }
     }
     // update latest card
-    this.latestCard = card;
+    this.latestCard = cardNumber;
     return payload;
   }
 

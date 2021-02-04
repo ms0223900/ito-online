@@ -14,6 +14,7 @@ const gamePlayingStatus = (state: ItoState, action: ItoActions): ItoState['gameP
       const newStatus = setObjPropertyByKeysAndValue(
         state.gamePlayingStatus, key, value
       );
+      console.log('newStatus', newStatus);
       return newStatus;
     }
     default:

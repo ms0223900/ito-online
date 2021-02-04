@@ -10,8 +10,9 @@ const usePlayingPart = () => {
   const {
     toggle: isResultOpen,
     setToggle: handleSetResultOpen,
-    handleCloseToggle,
+    handleCloseToggle: handleCloseResult,
   } = useToggle();
+  console.log(isResultOpen);
 
   const {
     state: {
@@ -94,11 +95,7 @@ const usePlayingPart = () => {
       default:
         break;
     }
-  }, [handleSetResultOpen, handleUpdateLife]);
-
-  const handleCloseResult = useCallback(() => {
-    handleCloseToggle();
-  }, []);
+  }, [handleUpdateLife]);
 
   useEffect(() => {
     // join room

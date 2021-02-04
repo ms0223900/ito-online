@@ -18,6 +18,17 @@ export interface PlayedResultPayload {
   result: PlayedResultType
 }
 export interface FailSuccessResultProps extends PlayedResultPayload {
+  onConfirmResult: Callback
+}
+
+export interface PassedRoundsInfoProps {
+  passedRounds: number
+}
+export interface ContinuedResultProps extends PassedRoundsInfoProps {
+  onContinue: Callback
+  onOverGame: Callback
+}
+export interface GameoverResultProps extends Omit<ContinuedResultProps, 'onContinue'> {
   
 }
 
