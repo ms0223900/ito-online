@@ -1,10 +1,36 @@
-import { setGamePlayingStatus, updateGamePlayingStatus } from "actions";
+import { setGamePlayingStatus, SetGamePlayingStatusPayload, updateGamePlayingStatus } from "actions";
 import { PlayedResultPayload, PlayingPartProps } from "components/ito/GamePart/components/Playing/types";
 import ContextStore from "constants/context";
 import ItoSocket, { UpdatePlayedResultPayload } from "constants/itoSocket";
+import ROUTES from "constants/ROUTES";
 import useToggle from "lib/custom-hooks/useToggle";
 import { send } from "process";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useHistory } from "react-router";
+
+const handleSetGameStatus = (dispatch: any) => (payload: SetGamePlayingStatusPayload) => {
+  dispatch(
+    setGamePlayingStatus(payload)
+  );
+};
+
+const handleUpdateMyCardNow = (dispatch: any) => () => {
+  dispatch(
+    updateGamePlayingStatus({
+      key: 'status.myCardNow',
+      value: null,
+    })
+  );
+};
+
+const handleUpdateLife = (dispatch: any) => (newLife: number) => {
+  dispatch(
+    updateGamePlayingStatus({
+      key: 'status.life.lifeNow',
+      value: newLife,
+    })
+  );
+};
 
 const usePlayingPart = () => {
   const {
@@ -12,7 +38,7 @@ const usePlayingPart = () => {
     setToggle: handleSetResultOpen,
     handleCloseToggle: handleCloseResult,
   } = useToggle();
-  console.log(isResultOpen);
+  const history = useHistory();
 
   const {
     state: {
@@ -29,25 +55,7 @@ const usePlayingPart = () => {
   } = gamePlayingStatus;
 
   const [playedResult, setPlayedResult] = useState<PlayedResultPayload>();
-  // const [lifeNow, setLife] = useState();
 
-  const handleUpdateMyCardNow = useCallback(() => {
-    dispatch(
-      updateGamePlayingStatus({
-        key: 'status.myCardNow',
-        value: null,
-      })
-    );
-  }, []);
-
-  const handleUpdateLife = useCallback((newLife: number) => {
-    dispatch(
-      updateGamePlayingStatus({
-        key: 'status.life.lifeNow',
-        value: newLife,
-      })
-    );
-  }, []);
 
   const handlePlayCard = useCallback(() => {
     if(gamePlayingStatus.status) {
@@ -56,9 +64,9 @@ const usePlayingPart = () => {
         cardNumber: gamePlayingStatus.status.myCardNow,
       });
       
-      sender && handleUpdateMyCardNow();
+      sender && handleUpdateMyCardNow(dispatch)();
     }
-  }, [gamePlayingStatus.status, handleUpdateMyCardNow, user.id]);
+  }, [dispatch, gamePlayingStatus.status, user.id]);
 
   const handleGetComparedResult = useCallback((payload: UpdatePlayedResultPayload) => {
     const {
@@ -73,20 +81,20 @@ const usePlayingPart = () => {
       case 'FAIL': {
         if(playedResult) {
           setPlayedResult({
-            prevCardNumber: playedResult.cardNumber,
+            ...payload,
+            prevCardNumber: playedResult.prevCard,
             nextCardNumber: playedResult.latestCard,
-            result: resultType,
           });
-          handleUpdateLife(playedResult.latestLife);
+          handleUpdateLife(dispatch)(playedResult.latestLife);
         }
         break;
       }
       case 'CONTINUED': 
         if(playedResult) {
           setPlayedResult({
-            prevCardNumber: playedResult.cardNumber,
+            ...payload,
+            prevCardNumber: playedResult.prevCard,
             nextCardNumber: playedResult.latestCard,
-            result: resultType,
           });
         }
         break;
@@ -95,7 +103,15 @@ const usePlayingPart = () => {
       default:
         break;
     }
-  }, [handleUpdateLife]);
+  }, [dispatch, handleSetResultOpen]);
+
+  const handleContinue = useCallback(() => {
+    // ItoSocket.
+  }, []);
+
+  const handleOvergame = useCallback(() => {
+    history.push(ROUTES.rooms);
+  }, []);
 
   useEffect(() => {
     // join room
@@ -113,12 +129,14 @@ const usePlayingPart = () => {
       });
     };
   }, []);
+  console.log(gamePlayingStatus);
 
   const playingPartProps: PlayingPartProps | undefined = useMemo(() => {
     const { status } = gamePlayingStatus;
     return (
       status ? ({
         ...status.question,
+        ...playedResult,
         isResultOpen,
         cardNumberNow: status.myCardNow,
         latestCardNumber: status.latestCard,
@@ -127,9 +145,11 @@ const usePlayingPart = () => {
         resultPayload: playedResult,
         onCloseResult: handleCloseResult,
         onPlayCard: handlePlayCard,
-      }) as PlayingPartProps : undefined
+        onContinue: handleContinue,
+        onOverGame: handleOvergame,
+      }) : undefined
     );
-  }, [gamePlayingStatus, handleCloseResult, handlePlayCard, isResultOpen, playedResult]);
+  }, [gamePlayingStatus, handleCloseResult, handleContinue, handleOvergame, handlePlayCard, isResultOpen, playedResult]);
 
   return ({
     playingPartProps

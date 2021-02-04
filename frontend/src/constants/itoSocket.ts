@@ -108,14 +108,12 @@ const ItoSocket = {
       isReady,
     });
   },
-
   sendUserJoinRoom({ roomId, user, }: UserJoinRoomPayload) {
     socket.emit(SOCKET_EVENT.JOIN_ROOM, {
       roomId,
       user,
     });
   },
-
   sendUserLeaveRoom({ roomId, userId, }: UserLeaveRoomPayload) {
     socket.emit(SOCKET_EVENT.LEAVE_ROOM, {
       roomId,
@@ -134,6 +132,10 @@ const ItoSocket = {
     }
     return false;
   },
+
+  // sendGameContinue({ roomId, }) {
+
+  // },
 };
 
 export default ItoSocket;

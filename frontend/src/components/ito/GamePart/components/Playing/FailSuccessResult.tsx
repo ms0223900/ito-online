@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Button, makeStyles, Typography } from '@material-ui/core';
 import { FailSuccessResultProps } from './types';
+import { PlayedResultType } from 'common-types';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -9,19 +10,27 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const getOperator = (resultType: PlayedResultType) => (
+  resultType === 'SUCCESS' ? ' < ' : ' > '
+);
+
 const FailSuccessResult = (props: FailSuccessResultProps) => {
+  const {
+    resultType,
+    prevCardNumber,
+    nextCardNumber,
+    onConfirmResult,
+  } = props;
   const classes = useStyles();
 
   return (
     <Box textAlign={'center'} className={classes.root}>
       <Typography variant={'h5'}>
-        {props.prevCardNumber}
-        {props.result === 'SUCCESS' ? '<' : '>'}
-        {props.nextCardNumber}
+        {`${nextCardNumber}${getOperator(resultType)}${prevCardNumber}`}
       </Typography>
-      <Typography variant={'h4'}>{props.result}</Typography> 
-      <Button onClick={props.onConfirmResult}>
-        {props.result}
+      <Typography variant={'h4'}>{resultType}</Typography> 
+      <Button onClick={onConfirmResult}>
+        {resultType}
       </Button>             
     </Box>
   );

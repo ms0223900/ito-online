@@ -1,6 +1,13 @@
 import { Callback, PlayedResultType } from "common-types";
 import { LifeListProps } from "../types";
 
+export interface PlayedResultPayload {
+  prevCardNumber: number
+  nextCardNumber: number
+  passedRounds: number
+  resultType: PlayedResultType
+}
+
 export interface ThemeQuestionProps {
   question: string
   supplement?: string
@@ -12,17 +19,11 @@ export interface PlayAreaProps {
   onPlayCard: Callback
 }
 
-export interface PlayedResultPayload {
-  prevCardNumber: number
-  nextCardNumber: number
-  result: PlayedResultType
-}
 export interface FailSuccessResultProps extends PlayedResultPayload {
   onConfirmResult: Callback
 }
 
-export interface PassedRoundsInfoProps {
-  passedRounds: number
+export interface PassedRoundsInfoProps extends Pick<PlayedResultPayload, 'passedRounds'> {
 }
 export interface ContinuedResultProps extends PassedRoundsInfoProps {
   onContinue: Callback
@@ -32,8 +33,7 @@ export interface GameoverResultProps extends Omit<ContinuedResultProps, 'onConti
   
 }
 
-export interface PlayedResultProps {
-  resultType: PlayedResultType
+export interface PlayedResultProps extends Omit<ContinuedResultProps, 'passedRounds'> {
   resultPayload?: PlayedResultPayload
   isResultOpen: boolean
   onCloseResult: Callback

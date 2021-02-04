@@ -87,7 +87,8 @@ class ItoGame {
     const continuedPayload = {
       user,
       cardNumber,
-      latestCard: this.latestCard,
+      prevCard: this.latestCard,
+      latestCard: cardNumber,
     };
     if(isSuccess) {
       const thisRoundPassed = this.checkThisRoundPassed();

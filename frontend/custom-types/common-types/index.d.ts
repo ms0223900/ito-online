@@ -72,7 +72,7 @@ declare module "common-types" {
 
   interface ComparedPlayedResult { //比較完的結果
     user: SingleUser
-    cardNumber: number
+    prevCard: number
     latestCard: number 
     latestLife: number
   }

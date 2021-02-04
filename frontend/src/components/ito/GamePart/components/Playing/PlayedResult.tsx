@@ -2,6 +2,8 @@ import React from 'react';
 import { Box, makeStyles, Modal, Typography } from '@material-ui/core';
 import { PlayedResultProps } from './types';
 import FailSuccessResult from './FailSuccessResult';
+import ContinuedResult from './ContinuedResult';
+import GameoverResult from './GameoverResult';
 
 const useStyles = makeStyles(theme => ({
   modal: {
@@ -14,13 +16,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PlayedResult = ({
-  isResultOpen,
-  resultType,
-  resultPayload,
-  onCloseResult,
-}: PlayedResultProps) => {
+const PlayedResult = (props: PlayedResultProps) => {
+  const {
+    isResultOpen,
+    resultPayload,
+    onCloseResult,
+  } = props;
   const classes = useStyles();
+
+  if(!resultPayload) {
+    return null;
+  }
 
   return (
     <>
@@ -36,11 +42,17 @@ const PlayedResult = ({
               onConfirmResult={onCloseResult}
             />
           )}
-          {resultType === 'SUCCESS' && (
-
+          {resultPayload.resultType === 'CONTINUED' && (
+            <ContinuedResult 
+              {...props} 
+              passedRounds={resultPayload.passedRounds}
+            />
           )}
-          {resultType === 'GAME_OVER' && (
-            
+          {resultPayload.resultType === 'GAME_OVER' && (
+            <GameoverResult 
+              {...props} 
+              passedRounds={resultPayload.passedRounds}
+            />
           )}
         </Box>
       </Modal>
