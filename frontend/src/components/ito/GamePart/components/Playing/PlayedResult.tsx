@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Modal, Typography } from '@material-ui/core';
 import { PlayedResultProps } from './types';
+import FailSuccessResult from './FailSuccessResult';
 
 const PlayedResult = ({
   isResultOpen,
@@ -15,14 +16,7 @@ const PlayedResult = ({
       >
         <>
           {resultPayload && (
-            <Box textAlign={'center'}>
-              <Typography variant={'h5'}>
-                {resultPayload.nextCardNumber}
-                {resultPayload.result === 'SUCCESS' ? '<' : '>'}
-                {resultPayload.prevCardNumber}
-              </Typography>
-              <Typography variant={'h4'}>{resultPayload.result}</Typography>              
-            </Box>
+            <FailSuccessResult {...resultPayload} />
           )}
         </>
       </Modal>

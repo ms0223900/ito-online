@@ -17,8 +17,12 @@ export interface PlayedResultPayload {
   nextCardNumber: number
   result: PlayedResultType
 }
+export interface FailSuccessResultProps extends PlayedResultPayload {
+  
+}
 
 export interface PlayedResultProps {
+  resultType: PlayedResultType
   resultPayload?: PlayedResultPayload
   isResultOpen: boolean
   onCloseResult: Callback
