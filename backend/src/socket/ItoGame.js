@@ -28,6 +28,7 @@ class ItoGame {
     this.passedRounds = 0;
     this.init();
     this.cards = this.makeRandomCards(cardAmount);
+    this.questions = [];
   }
 
   init() {
@@ -167,8 +168,17 @@ class ItoGame {
     return cards;
   }
 
+  async getRandomQuestion() {
+    if(this.questions.length === 0) {
+      const queriedQuestions = await getThemeQuestions();
+      this.questions = queriedQuestions;
+    }
+    const question = _.shuffle(this.questions)[0];
+    return question;
+  }
+
   async getQuestionAndCard() {
-    const question = await getRandomThemeQuestion();
+    const question = await this.getRandomQuestion();
     console.log(question);
 
     if(!question) {

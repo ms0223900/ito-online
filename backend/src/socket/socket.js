@@ -52,12 +52,37 @@ class GameSocket {
       minPlayersAmount,
     });
     this.removeListenerCb = undefined;
+    this.usersConfirmedStatus = [];
     firstUser && this.game.addPlayer(firstUser);
   }
 
   initGame(socket, io) {
     this.io = io;
     this.removeListenerCb = this.onListenUserActions(socket);
+  }
+
+  checkAllUsersAreSendRequest() {
+    return this.usersConfirmedStatus.length === this.game.users.length;
+  }
+  getUsersContinueOrLeaveGamePayload() {
+    const allAreSend = this.checkAllUsersAreSendRequest();
+    if(allAreSend) {
+      const usersContinue = this.usersConfirmedStatus.filter(u => (
+        u === USER_ACTION.CONFIRM_CONTINUE_GAME
+      ));
+
+      if(usersContinue.length > this.game.minPlayersAmount) {
+        return ({
+          gameStatus: GAME_STATUS.SET_CONTINUE_GAME_SUCCESS,
+        });
+      } else {
+        return ({
+          gameStatus: GAME_STATUS.SET_CONTINUE_GAME_FAIL,
+        });
+      }
+    } else {
+      return undefined;
+    }
   }
 
   onListenUserActions(socket, actions) {
@@ -83,6 +108,17 @@ class GameSocket {
             this.sendPlayerReady({ userId, isReady, });
           }
           console.log(allAreReady);
+          break;
+        }
+        case USER_ACTION.CONFIRM_CONTINUE_GAME:
+        case USER_ACTION.CONFIRM_LEAVE_GAME: {
+          this.usersConfirmedStatus.push(e.userActionType);
+          const payload = this.getUsersContinueOrLeaveGamePayload();
+          if(payload) {
+            this.sendAllInRoom(payload, );
+            this.usersConfirmedStatus = [];
+          }
+          break;
         }
         case USER_ACTION.GET_ALL_PLAYERS_READY: {
           // 給sender目前room最新狀態

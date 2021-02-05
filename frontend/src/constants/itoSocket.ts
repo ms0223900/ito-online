@@ -133,9 +133,16 @@ const ItoSocket = {
     return false;
   },
 
-  // sendGameContinue({ roomId, }) {
-
-  // },
+  sendConfirmContinue() {
+    socket.emit(SOCKET_EVENT.USER_ACTION, {
+      userActionType: USER_ACTION.CONFIRM_CONTINUE_GAME,
+    });
+  },
+  sendConfirmLeave() {
+    socket.emit(SOCKET_EVENT.USER_ACTION, {
+      userActionType: USER_ACTION.CONFIRM_LEAVE_GAME,
+    });
+  },
 };
 
 export default ItoSocket;

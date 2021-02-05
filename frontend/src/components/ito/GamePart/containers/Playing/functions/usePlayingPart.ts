@@ -90,6 +90,7 @@ const usePlayingPart = () => {
         break;
       }
       case 'CONTINUED': 
+      case 'GAME_OVER':
         if(playedResult) {
           setPlayedResult({
             ...payload,
@@ -98,18 +99,17 @@ const usePlayingPart = () => {
           });
         }
         break;
-      case 'GAME_OVER':
-        break;
       default:
         break;
     }
   }, [dispatch, handleSetResultOpen]);
 
   const handleContinue = useCallback(() => {
-    // ItoSocket.
+    ItoSocket.sendConfirmContinue();
   }, []);
 
   const handleOvergame = useCallback(() => {
+    ItoSocket.sendConfirmLeave();
     history.push(ROUTES.rooms);
   }, []);
 

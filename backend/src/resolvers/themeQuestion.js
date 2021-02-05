@@ -3,9 +3,13 @@ const ThemeQuestion = require("../model/ThemeQuestion.js");
 
 const mockQuestions = [
   {
+    _id: '0001',
+    id: '1',
     content: '各種天氣現象的「不舒適」程度。',
   },
   {
+    _id: '0002',
+    id: '2',
     content: 'Onepiece角色的強弱程度。',
   }
 ];
