@@ -1,0 +1,16 @@
+**/*.md
+**/.gitignore
+**/.gitattributes
+**/*.DS_Store
+
+node_modules
+src/__tests
+storybook-static
+coverage
+
+.git
+.nyc_output
+.eslintrc
+
+package-lock.json
+# yarn.lock

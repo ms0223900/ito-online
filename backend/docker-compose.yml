@@ -1,0 +1,7 @@
+version: "3.7"
+services:
+  ito-backend:
+    image: ito-backend:1.0.2
+    build:
+      context: .
+      dockerfile: Dockerfile

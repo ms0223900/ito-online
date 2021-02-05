@@ -10,6 +10,7 @@ const { emitMessage, GamesManager } = require('./src/socket/socket.js');
 const {
   useRoomRoutes,
 } = require('./src/routes/room');
+require('dotenv').config();
 
 const PORT = process.env.PORT || 5001;
 
@@ -26,6 +27,7 @@ const CLIENT_SIDE_ORIGIN =
   process.env.NODE_ENV === 'production' ? 
     process.env.CLIENT_URL :
     'http://localhost:3000';
+console.log(process.env.NODE_ENV);
 
 const express = require('express');
 const { deleteRoom, updateRoom } = require('./src/resolvers/room.js');
@@ -33,8 +35,10 @@ const app = require('express')();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server, {
   cors: {
-    origin: CLIENT_SIDE_ORIGIN,
-    methods: ['GET', 'POST']
+    // origin: CLIENT_SIDE_ORIGIN,
+    origins: "*:*",
+    methods: ['GET', 'POST'],
+    allowedHeaders: ["content-type"],
   }
 });
 
