@@ -52,8 +52,8 @@ class ItoGame {
       player,
     ];
   }
-  findPlayer(userId='') {
-    return this.users.find(u => u.id === userId);
+  findPlayerIndex(userId='') {
+    return this.users.findIndex(u => u.id === userId);
   }
   removePlayer(userId='') {
     this.users = this.users.filter(p => p.id !== userId);
@@ -66,27 +66,29 @@ class ItoGame {
     return res;
   }
   updateUserCardPlayed(userId) {
-    const user = this.findPlayer(userId);
-    if(user) {
-      user.isCardPlayed = true;
+    const userIdx = this.findPlayerIndex(userId);
+    if(userIdx !== -1) {
+      this.users[userIdx].isCardPlayed = true;
     }
   }
   getCompareCardResult(card=0) {
     return this.latestCard > card;
   }
   compareCard({
-    user, cardNumber,
+    userId, cardNumber,
   }) {
+    // 更新卡片已經出過
+    this.updateUserCardPlayed(userId);
     const isSuccess = this.getCompareCardResult(cardNumber);
     const thisRoundOver = this.checkThisRoundOver();
 
     if(!isSuccess) {
       this.life = this.life - 1;
     }
+    
     const latestLife = this.life;
     const playedResult = {
-      user,
-      cardNumber,
+      userId,
       prevCard: this.latestCard,
       latestCard: cardNumber,
       latestLife,
@@ -96,11 +98,13 @@ class ItoGame {
       gameStatus: GAME_STATUS.SET_PLAYED_RESULT,
       resultType: PLAYED_RESULT.CONTINUED,
       passedRounds: this.passedRounds,
+      playedResult,
     };
 
     // 該回合結束
     if(thisRoundOver) {
       if(this.life > 0) {
+        this.passedRounds += 1;
         payload = {
           ...payload,
           passedRounds: this.passedRounds,
@@ -108,27 +112,25 @@ class ItoGame {
       } else {
         payload = ({
           ...payload,
-          gameStatus: PLAYED_RESULT.GAME_OVER,
+          resultType: PLAYED_RESULT.GAME_OVER,
         });
       }
     }
     // 繼續該回合
     else {
-      this.passedRounds += 1;
       if(isSuccess) {
         payload = ({
           ...payload,
           resultType: PLAYED_RESULT.SUCCESS,
-          playedResult,
         });
       } else {
         payload = ({
           ...payload,
           resultType: PLAYED_RESULT.FAIL,
-          playedResult,
         });
       }
     }
+    console.log(payload);
     // update latest card
     this.latestCard = cardNumber;
     return payload;

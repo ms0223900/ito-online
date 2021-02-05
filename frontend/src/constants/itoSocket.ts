@@ -133,9 +133,10 @@ const ItoSocket = {
     return false;
   },
 
-  sendConfirmContinue() {
+  sendConfirmContinue(userId: string) {
     socket.emit(SOCKET_EVENT.USER_ACTION, {
       userActionType: USER_ACTION.CONFIRM_CONTINUE_GAME,
+      userId,
     });
   },
   sendConfirmLeave() {

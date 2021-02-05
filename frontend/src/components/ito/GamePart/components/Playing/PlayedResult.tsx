@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, makeStyles, Modal, Typography } from '@material-ui/core';
+import { Box, makeStyles, Modal, Paper, Typography } from '@material-ui/core';
 import { PlayedResultPayload, PlayedResultProps } from './types';
 import FailSuccessResult from './FailSuccessResult';
 import ContinuedResult from './ContinuedResult';
@@ -11,7 +11,10 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  body: {
+  content: {
+    backgroundColor: '#fff',
+    padding: theme.spacing(1),
+    borderRadius: theme.spacing(1),
     
   }
 }));
@@ -66,9 +69,9 @@ const PlayedResult = (props: PlayedResultProps) => {
         open={isResultOpen}
         onClose={onCloseResult}
       >
-        <Box>
+        <Paper className={classes.content}>
           {getModalResult(props)}
-        </Box>
+        </Paper>
       </Modal>
     </>
   );

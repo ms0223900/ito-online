@@ -118,8 +118,8 @@ const usePlayingPart = () => {
   const handleGameStart = handleSetGameStatus(dispatch)(user, roomId);
 
   const handleContinue = useCallback(() => {
-    ItoSocket.sendConfirmContinue();
-  }, []);
+    ItoSocket.sendConfirmContinue(user.id);
+  }, [user.id]);
 
   const handleOvergame = useCallback(() => {
     ItoSocket.sendConfirmLeave();

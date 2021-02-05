@@ -71,7 +71,7 @@ class GameSocket {
         u === USER_ACTION.CONFIRM_CONTINUE_GAME
       ));
 
-      if(usersContinue.length > this.game.minPlayersAmount) {
+      if(usersContinue.length >= this.game.minPlayersAmount) {
         return ({
           gameStatus: GAME_STATUS.SET_CONTINUE_GAME_SUCCESS,
         });
@@ -204,16 +204,14 @@ class GameSocket {
     this.sendAllInRoom(payload);
   }
 
-  sendCardComparedResult({ user, cardNumber, }) {
-    const res = this.game.compareCard({ user, cardNumber, });
+  sendCardComparedResult({ userId, cardNumber, }) {
+    const res = this.game.compareCard({ userId, cardNumber, });
     if(res.resultType === PLAYED_RESULT.CONTINUED || 
       res.resultType === PLAYED_RESULT.GAME_OVER
     ) {
       this.game.init();
     }
     this.sendAllInRoom(res);
-    // 更新卡片已經出過
-    this.game.updateUserCardPlayed(user.id);
   }
 }
 
