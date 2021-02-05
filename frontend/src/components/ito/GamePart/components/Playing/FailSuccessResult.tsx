@@ -27,8 +27,8 @@ const FailSuccessResult = (props: FailSuccessResultProps) => {
     <Box textAlign={'center'} className={classes.root}>
       <Typography variant={'h5'}>
         {(!prevCardNumber || prevCardNumber === Infinity) ? 
-          `${nextCardNumber}${getOperator(resultType)}${prevCardNumber}` : 
-          nextCardNumber}
+          nextCardNumber :
+          `${nextCardNumber}${getOperator(resultType)}${prevCardNumber}`}
       </Typography>
       <Typography variant={'h4'}>{resultType}</Typography> 
       <Button onClick={onConfirmResult}>

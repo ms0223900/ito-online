@@ -2,6 +2,7 @@ import { setGamePlayingStatus, SetGamePlayingStatusPayload, updateGamePlayingSta
 import { GamePlayingStatusFromSocketPayload, SingleUser } from "common-types";
 import { PlayedResultPayload, PlayingPartProps } from "components/ito/GamePart/components/Playing/types";
 import makeGamePlayingPayload from "components/ito/RoomPart/containers/WaitingRoom/functions/makeGamePlayingPayload";
+import { GameStatusTypes, GAME_STATUS } from "config";
 import ContextStore from "constants/context";
 import ItoSocket, { UpdatePlayedResultPayload } from "constants/itoSocket";
 import ROUTES from "constants/ROUTES";
@@ -44,6 +45,10 @@ const usePlayingPart = () => {
     setToggle: handleSetResultOpen,
     handleCloseToggle: handleCloseResult,
   } = useToggle();
+  const {
+    toggle: isConfirmedContinue,
+    setToggle: setConfirmed,
+  } = useToggle();
   const history = useHistory();
 
   const {
@@ -62,6 +67,7 @@ const usePlayingPart = () => {
   useEnterSocketRoom({
     roomId, user,
   });
+  console.log('Result open: ', isResultOpen);
 
   const [playedResult, setPlayedResult] = useState<PlayedResultPayload>();
 
@@ -85,7 +91,10 @@ const usePlayingPart = () => {
       playedResult,
     } = payload;
     // open result
-    handleSetResultOpen(true);
+    if(payload.gameStatus === GameStatusTypes.SET_PLAYED_RESULT) {
+      console.log('open result');
+      handleSetResultOpen(true);
+    }
     
     switch (resultType) {
       case 'SUCCESS':
@@ -113,11 +122,17 @@ const usePlayingPart = () => {
       default:
         break;
     }
-  }, [dispatch, handleSetResultOpen]);
+  }, [dispatch]);
 
-  const handleGameStart = handleSetGameStatus(dispatch)(user, roomId);
+  const handleGameStart = useCallback((payload: GamePlayingStatusFromSocketPayload) => {
+    console.log('Game start.');
+    setConfirmed(false);
+    handleCloseResult();
+    handleSetGameStatus(dispatch)(user, roomId)(payload);
+  }, [dispatch, handleCloseResult, roomId, setConfirmed, user]);
 
   const handleContinue = useCallback(() => {
+    setConfirmed(true);
     ItoSocket.sendConfirmContinue(user.id);
   }, [user.id]);
 
@@ -136,7 +151,7 @@ const usePlayingPart = () => {
       listener();
     };
   }, [handleGameStart, handleGetComparedResult, roomId, user, userId]);
-  console.log(gamePlayingStatus);
+  // console.log(gamePlayingStatus);
 
   const onEvents = useMemo(() => ({
     onCloseResult: handleCloseResult,
@@ -152,6 +167,7 @@ const usePlayingPart = () => {
         ...status.question,
         ...playedResult,
         ...onEvents,
+        isConfirmed: isConfirmedContinue,
         isResultOpen,
         cardNumberNow: status.myCardNow,
         latestCardNumber: status.latestCard,
@@ -160,7 +176,7 @@ const usePlayingPart = () => {
         resultPayload: playedResult,
       }) : undefined
     );
-  }, [gamePlayingStatus, onEvents, isResultOpen, playedResult]);
+  }, [gamePlayingStatus, playedResult, onEvents, isConfirmedContinue, isResultOpen]);
 
   return ({
     playingPartProps

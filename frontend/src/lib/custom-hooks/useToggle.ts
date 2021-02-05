@@ -17,7 +17,7 @@ const useToggle = (initToggle: boolean=false): UseToggleStates => {
   };
 
   const handleCloseToggle = () => {
-    toggle && setToggle(false);
+    setToggle(false);
   };
   
   return { toggle, setToggle, handleToggle, handleCloseToggle };

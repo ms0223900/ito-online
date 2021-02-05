@@ -32,8 +32,16 @@ class ItoGame {
   }
 
   init() {
-    this.cardsOnDesk = [];
     this.users = [];
+    this.life = this.initLife;
+    this.latestCard = Infinity; // 第一張卡一定沒問題
+  }
+  initForContinue() {
+    this.users = this.users.map(u => ({
+      ...u,
+      isReady: false,
+      isCardPlayed: false,
+    }));
     this.life = this.initLife;
     this.latestCard = Infinity; // 第一張卡一定沒問題
   }

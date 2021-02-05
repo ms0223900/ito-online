@@ -58,6 +58,7 @@ class GameSocket {
 
   initGame(socket, io) {
     this.io = io;
+    this.usersConfirmedStatus = [];
     this.removeListenerCb = this.onListenUserActions(socket);
   }
 
@@ -66,6 +67,7 @@ class GameSocket {
   }
   getUsersContinueOrLeaveGamePayload() {
     const allAreSend = this.checkAllUsersAreSendRequest();
+    console.log(`AllAreSend: ${allAreSend}`);
     if(allAreSend) {
       const usersContinue = this.usersConfirmedStatus.filter(u => (
         u === USER_ACTION.CONFIRM_CONTINUE_GAME
@@ -117,11 +119,12 @@ class GameSocket {
         case USER_ACTION.CONFIRM_LEAVE_GAME: {
           this.usersConfirmedStatus.push(e.userActionType);
           const payload = this.getUsersContinueOrLeaveGamePayload();
+          console.log(payload);
 
           if(payload) {
             if(payload.gameStatus === GAME_STATUS.SET_CONTINUE_GAME_SUCCESS) {
               console.log(`Room ${this.roomId} game is continued.`);
-              this.sendGameStart();
+              this.sendGameContinued();
             } else {
               this.sendAllInRoom(payload, );
             }
@@ -192,6 +195,12 @@ class GameSocket {
         console.log(e);
       });
   }
+
+  sendGameContinued() {
+    this.game.initForContinue();
+    this.sendGameStart();
+  }
+
   makeEnterMes({ roomId, user, }) {
     return ({
       gameStatus: GAME_STATUS.READY,
@@ -206,11 +215,7 @@ class GameSocket {
 
   sendCardComparedResult({ userId, cardNumber, }) {
     const res = this.game.compareCard({ userId, cardNumber, });
-    if(res.resultType === PLAYED_RESULT.CONTINUED || 
-      res.resultType === PLAYED_RESULT.GAME_OVER
-    ) {
-      this.game.init();
-    }
+    // 不在這邊做init，因為continue不一定成功
     this.sendAllInRoom(res);
   }
 }

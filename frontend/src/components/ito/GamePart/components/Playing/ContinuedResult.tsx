@@ -9,7 +9,7 @@ const ContinuedResult = (props: ContinuedResultProps) => {
     <Box>
       <PassedRoundsInfo {...props} />
       <Box>
-        <CTAButton onClick={props.onContinue}>
+        <CTAButton disabled={props.isConfirmed} onClick={props.onContinue}>
           {'Continue!'}
         </CTAButton>
         <CTAButton color={'default'} onClick={props.onOverGame}>
