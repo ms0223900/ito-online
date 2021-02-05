@@ -1,5 +1,5 @@
 const {
-  SOCKET_EVENT, GAME_STATUS, USER_ACTION,
+  SOCKET_EVENT, GAME_STATUS, USER_ACTION, PLAYED_RESULT,
 } = require('../../config.js');
 const { createRoom } = require('../resolvers/room.js');
 const {
@@ -86,6 +86,7 @@ class GameSocket {
   }
 
   onListenUserActions(socket, actions) {
+    console.log('Listening user actions...');
     socket.on(SOCKET_EVENT.USER_ACTION, e => {
       if(e) {
         console.log(`Action: `, e);
@@ -95,6 +96,7 @@ class GameSocket {
           if(userId && cardNumber) {
             this.sendCardComparedResult({ userId, cardNumber, });
           }
+          break;
         }
         case USER_ACTION.SET_READY: {
           const { isReady, userId, } = e;
@@ -105,7 +107,8 @@ class GameSocket {
           if(allAreReady) {
             this.sendGameStart();
           } else {
-            this.sendPlayerReady({ userId, isReady, });
+            // this.sendPlayerReady({ userId, isReady, });
+            this.sendAllPlayerReady();
           }
           console.log(allAreReady);
           break;
@@ -114,8 +117,14 @@ class GameSocket {
         case USER_ACTION.CONFIRM_LEAVE_GAME: {
           this.usersConfirmedStatus.push(e.userActionType);
           const payload = this.getUsersContinueOrLeaveGamePayload();
+
           if(payload) {
-            this.sendAllInRoom(payload, );
+            if(payload.gameStatus === GAME_STATUS.SET_CONTINUE_GAME_SUCCESS) {
+              console.log(`Room ${this.roomId} game is continued.`);
+              this.sendGameStart();
+            } else {
+              this.sendAllInRoom(payload, );
+            }
             this.usersConfirmedStatus = [];
           }
           break;
@@ -123,6 +132,7 @@ class GameSocket {
         case USER_ACTION.GET_ALL_PLAYERS_READY: {
           // 給sender目前room最新狀態
           this.sendAllPlayerReady(socket);
+          break;
         }
         default:
           break;
@@ -142,10 +152,6 @@ class GameSocket {
       .emit(socketEvent, payload);
   }
   sendPlayerReady({ userId, isReady }) {
-    // 送全部
-    // this.sendAllInRoom({
-    //   users: this.game.users,
-    // });
     // 送一個
     this.sendAllInRoom({
       gameStatus: GAME_STATUS.UPDATE_READY,
@@ -200,12 +206,14 @@ class GameSocket {
 
   sendCardComparedResult({ user, cardNumber, }) {
     const res = this.game.compareCard({ user, cardNumber, });
-    if(res.gameStatus === GAME_STATUS.PASS || 
-      res.gameStatus === GAME_STATUS.OVER
+    if(res.resultType === PLAYED_RESULT.CONTINUED || 
+      res.resultType === PLAYED_RESULT.GAME_OVER
     ) {
       this.game.init();
     }
     this.sendAllInRoom(res);
+    // 更新卡片已經出過
+    this.game.updateUserCardPlayed(user.id);
   }
 }
 
@@ -224,6 +232,7 @@ class GamesManager {
     minPlayersAmount,
   }) {
     return async (updateRoomCb,) => {
+      console.log(`User: ${user.id} enter room: ${roomId}`);
       SocketRoom.enterRoom(socket)(roomId);
       let gameRoom = this.findGameRoom(roomId);
       // console.log(gameRoom);

@@ -1,20 +1,27 @@
 import { setGamePlayingStatus, SetGamePlayingStatusPayload, updateGamePlayingStatus } from "actions";
+import { GamePlayingStatusFromSocketPayload, SingleUser } from "common-types";
 import { PlayedResultPayload, PlayingPartProps } from "components/ito/GamePart/components/Playing/types";
+import makeGamePlayingPayload from "components/ito/RoomPart/containers/WaitingRoom/functions/makeGamePlayingPayload";
 import ContextStore from "constants/context";
 import ItoSocket, { UpdatePlayedResultPayload } from "constants/itoSocket";
 import ROUTES from "constants/ROUTES";
+import useEnterSocketRoom from "lib/custom-hooks/useEnterSocketRoom";
 import useToggle from "lib/custom-hooks/useToggle";
 import { send } from "process";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router";
 
-const handleSetGameStatus = (dispatch: any) => (payload: SetGamePlayingStatusPayload) => {
+const handleSetGameStatus = (dispatch: any) => (user: SingleUser, roomId: string) => (payload: GamePlayingStatusFromSocketPayload) => {
+  const ctxPayload = makeGamePlayingPayload({
+    user,
+    roomId,
+    payloadFromSocket: payload,
+  });
   dispatch(
-    setGamePlayingStatus(payload)
+    setGamePlayingStatus(ctxPayload)
   );
 };
-
-const handleUpdateMyCardNow = (dispatch: any) => () => {
+const handleResetMyCardNow = (dispatch: any) => () => {
   dispatch(
     updateGamePlayingStatus({
       key: 'status.myCardNow',
@@ -22,7 +29,6 @@ const handleUpdateMyCardNow = (dispatch: any) => () => {
     })
   );
 };
-
 const handleUpdateLife = (dispatch: any) => (newLife: number) => {
   dispatch(
     updateGamePlayingStatus({
@@ -53,18 +59,23 @@ const usePlayingPart = () => {
   const {
     roomId,
   } = gamePlayingStatus;
+  useEnterSocketRoom({
+    roomId, user,
+  });
 
   const [playedResult, setPlayedResult] = useState<PlayedResultPayload>();
 
 
   const handlePlayCard = useCallback(() => {
     if(gamePlayingStatus.status) {
+      console.log(`UserId: ${user.id}`);
+      console.log(`MyCardNow: ${gamePlayingStatus.status.myCardNow}`);
       const sender = ItoSocket.sendPlayCard({
         userId: user.id,
         cardNumber: gamePlayingStatus.status.myCardNow,
       });
       
-      sender && handleUpdateMyCardNow(dispatch)();
+      sender && handleResetMyCardNow(dispatch)();
     }
   }, [dispatch, gamePlayingStatus.status, user.id]);
 
@@ -104,6 +115,8 @@ const usePlayingPart = () => {
     }
   }, [dispatch, handleSetResultOpen]);
 
+  const handleGameStart = handleSetGameStatus(dispatch)(user, roomId);
+
   const handleContinue = useCallback(() => {
     ItoSocket.sendConfirmContinue();
   }, []);
@@ -114,22 +127,23 @@ const usePlayingPart = () => {
   }, []);
 
   useEffect(() => {
-    // join room
-    ItoSocket.sendUserJoinRoom({
-      user, roomId,
-    });
     // 取得最新卡片比較結果、愛心
     const listener = ItoSocket.onListenGameStatus({
       onGetComparedResult: handleGetComparedResult,
+      onGameStart: handleGameStart,
     });
     return () => {
       listener();
-      ItoSocket.sendUserLeaveRoom({
-        userId, roomId,
-      });
     };
-  }, []);
+  }, [handleGameStart, handleGetComparedResult, roomId, user, userId]);
   console.log(gamePlayingStatus);
+
+  const onEvents = useMemo(() => ({
+    onCloseResult: handleCloseResult,
+    onPlayCard: handlePlayCard,
+    onContinue: handleContinue,
+    onOverGame: handleOvergame,
+  }), [handleCloseResult, handleContinue, handleOvergame, handlePlayCard]);
 
   const playingPartProps: PlayingPartProps | undefined = useMemo(() => {
     const { status } = gamePlayingStatus;
@@ -137,19 +151,16 @@ const usePlayingPart = () => {
       status ? ({
         ...status.question,
         ...playedResult,
+        ...onEvents,
         isResultOpen,
         cardNumberNow: status.myCardNow,
         latestCardNumber: status.latestCard,
         maxLife: status.life.maxLife,
         remainLife: status.life.lifeNow,
         resultPayload: playedResult,
-        onCloseResult: handleCloseResult,
-        onPlayCard: handlePlayCard,
-        onContinue: handleContinue,
-        onOverGame: handleOvergame,
       }) : undefined
     );
-  }, [gamePlayingStatus, handleCloseResult, handleContinue, handleOvergame, handlePlayCard, isResultOpen, playedResult]);
+  }, [gamePlayingStatus, onEvents, isResultOpen, playedResult]);
 
   return ({
     playingPartProps

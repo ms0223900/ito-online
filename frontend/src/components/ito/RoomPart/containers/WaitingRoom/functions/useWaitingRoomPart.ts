@@ -7,6 +7,7 @@ import { SOCKET_EVENT, USER_ACTION } from "config";
 import ContextStore, { initItoState } from "constants/context";
 import ItoSocket, { AddPlayerPayload, PlayerUpdateReadyPayload, RemovePlayerPayload, UpdateAllPlayersPayload } from "constants/itoSocket";
 import ROUTES, { RouterParams } from "constants/ROUTES";
+import useEnterSocketRoom from "lib/custom-hooks/useEnterSocketRoom";
 import useToggle from "lib/custom-hooks/useToggle";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useHistory, useParams } from "react-router";
@@ -31,6 +32,9 @@ const useWaitingRoomPart = ({
     roomId,
   } = useParams<RouterParams>();
   const history = useHistory();
+  useEnterSocketRoom({
+    user, roomId,
+  });
 
   const {
     toggle: isReady,
@@ -76,11 +80,6 @@ const useWaitingRoomPart = ({
   }, [history, roomId, setGamePlayingStatusToCtx, user]);
 
   useEffect(() => {
-    // 加入該房間
-    ItoSocket.sendUserJoinRoom({
-      user: user,
-      roomId,
-    });
     // 取得房間最新狀態
     const listener = ItoSocket.onListenGameStatus({
       onUpdateAllPlayers: handleUpdateAllPlayers,
@@ -91,13 +90,8 @@ const useWaitingRoomPart = ({
     });
     return () => {
       listener();
-      console.log('leave room');
-      ItoSocket.sendUserLeaveRoom({
-        roomId,
-        userId: user.id,
-      });
     };
-  }, [roomId, user]);
+  }, [handleAddPalyerToRoom, handleGameStart, handleRemovePlayerFromRoom, handleUpdateAllPlayers, handleUpdateRoomPlayerReady]);
 
   useEffect(() => {
     ItoSocket.sendUserReady({

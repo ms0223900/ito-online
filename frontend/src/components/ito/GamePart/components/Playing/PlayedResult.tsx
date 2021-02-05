@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, makeStyles, Modal, Typography } from '@material-ui/core';
-import { PlayedResultProps } from './types';
+import { PlayedResultPayload, PlayedResultProps } from './types';
 import FailSuccessResult from './FailSuccessResult';
 import ContinuedResult from './ContinuedResult';
 import GameoverResult from './GameoverResult';
@@ -15,6 +15,37 @@ const useStyles = makeStyles(theme => ({
     
   }
 }));
+
+export const getModalResult = (props: PlayedResultProps) => {
+  const { resultPayload } = props;
+
+  if(resultPayload) {
+    if(resultPayload.resultType === 'CONTINUED') {
+      return (
+        <ContinuedResult 
+          {...props} 
+          passedRounds={resultPayload.passedRounds}
+        />
+      );
+    } 
+    
+    else if(resultPayload.resultType === 'GAME_OVER') {
+      return (
+        <GameoverResult 
+          {...props} 
+          passedRounds={resultPayload.passedRounds}
+        />
+      );
+    }
+
+    return (
+      <FailSuccessResult 
+        {...resultPayload}
+        onConfirmResult={props.onCloseResult}
+      />
+    );
+  }
+};
 
 const PlayedResult = (props: PlayedResultProps) => {
   const {
@@ -36,24 +67,7 @@ const PlayedResult = (props: PlayedResultProps) => {
         onClose={onCloseResult}
       >
         <Box>
-          {resultPayload && (
-            <FailSuccessResult 
-              {...resultPayload}
-              onConfirmResult={onCloseResult}
-            />
-          )}
-          {resultPayload.resultType === 'CONTINUED' && (
-            <ContinuedResult 
-              {...props} 
-              passedRounds={resultPayload.passedRounds}
-            />
-          )}
-          {resultPayload.resultType === 'GAME_OVER' && (
-            <GameoverResult 
-              {...props} 
-              passedRounds={resultPayload.passedRounds}
-            />
-          )}
+          {getModalResult(props)}
         </Box>
       </Modal>
     </>

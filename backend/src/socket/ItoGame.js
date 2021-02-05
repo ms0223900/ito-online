@@ -77,25 +77,30 @@ class ItoGame {
   compareCard({
     user, cardNumber,
   }) {
+    const isSuccess = this.getCompareCardResult(cardNumber);
+    const thisRoundOver = this.checkThisRoundOver();
+
+    if(!isSuccess) {
+      this.life = this.life - 1;
+    }
+    const latestLife = this.life;
+    const playedResult = {
+      user,
+      cardNumber,
+      prevCard: this.latestCard,
+      latestCard: cardNumber,
+      latestLife,
+    };
+
     let payload = {
       gameStatus: GAME_STATUS.SET_PLAYED_RESULT,
       resultType: PLAYED_RESULT.CONTINUED,
       passedRounds: this.passedRounds,
     };
 
-    const isSuccess = this.getCompareCardResult(cardNumber);
-
-    const continuedPayload = {
-      user,
-      cardNumber,
-      prevCard: this.latestCard,
-      latestCard: cardNumber,
-    };
-    if(isSuccess) {
-      const thisRoundPassed = this.checkThisRoundPassed();
-      this.passedRounds += 1;
-      // 這回合結束
-      if(thisRoundPassed) {
+    // 該回合結束
+    if(thisRoundOver) {
+      if(this.life > 0) {
         payload = {
           ...payload,
           passedRounds: this.passedRounds,
@@ -103,29 +108,24 @@ class ItoGame {
       } else {
         payload = ({
           ...payload,
-          resultType: PLAYED_RESULT.SUCCESS,
-          playedResult: {
-            ...continuedPayload,
-            latestLife: this.life, // life 直接在server端算完
-          }
+          gameStatus: PLAYED_RESULT.GAME_OVER,
         });
       }
-    } else {
-      this.life = this.life - 1;
-      
-      if(this.life > 0) { 
+    }
+    // 繼續該回合
+    else {
+      this.passedRounds += 1;
+      if(isSuccess) {
         payload = ({
           ...payload,
-          resultType: PLAYED_RESULT.FAIL,
-          playedResult: {
-            ...continuedPayload,
-            latestLife: this.life,
-          }
+          resultType: PLAYED_RESULT.SUCCESS,
+          playedResult,
         });
       } else {
         payload = ({
           ...payload,
-          gameStatus: PLAYED_RESULT.GAME_OVER,
+          resultType: PLAYED_RESULT.FAIL,
+          playedResult,
         });
       }
     }
@@ -153,7 +153,7 @@ class ItoGame {
     }
   }
 
-  checkThisRoundPassed() {
+  checkThisRoundOver() {
     const allCardsPlayed = this.users.every(p => p.isCardPlayed);
     return allCardsPlayed;
   }
