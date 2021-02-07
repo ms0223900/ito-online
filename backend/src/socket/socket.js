@@ -51,19 +51,20 @@ class GameSocket {
     this.game = new ItoGame({
       minPlayersAmount,
     });
-    this.removeListenerCb = undefined;
+    this.userListeners = [];
     this.usersConfirmedStatus = [];
     firstUser && this.game.addPlayer(firstUser);
   }
 
-  initGame(socket, io) {
+  initGame(io, socket) {
     this.io = io;
     this.usersConfirmedStatus = [];
-    this.removeListenerCb = this.onListenUserActions(socket);
+    this.onListenUserActions(socket);
   }
 
   checkAllUsersAreSendRequest() {
-    return this.usersConfirmedStatus.length === this.game.users.length;
+    // 有可能玩家先離開
+    return this.usersConfirmedStatus.length >= this.game.users.length;
   }
   getUsersContinueOrLeaveGamePayload() {
     const allAreSend = this.checkAllUsersAreSendRequest();
@@ -87,7 +88,24 @@ class GameSocket {
     }
   }
 
-  onListenUserActions(socket, actions) {
+  // 註冊listener相關處理，先留著
+  // findUserListener(userId='', listenerName='') {
+  //   const userListener = this.userListeners.find(u => (
+  //     u.userId === userId && Object.keys(u.listeners).includes(listenerName)
+  //   ));
+  //   return userListener;
+  // }
+  // onListen(userId, listener) {
+  //   // 要先註冊嗎...？
+  //   const userListener = this.findUserListener(userId, listener.name);
+  //   if(!userListener) {
+
+  //   }
+  // }
+
+  onListenUserActions(socket) {
+    // init this listener
+    this.removeListeners(socket);
     console.log('Listening user actions...');
     socket.on(SOCKET_EVENT.USER_ACTION, e => {
       if(e) {
@@ -112,7 +130,7 @@ class GameSocket {
             // this.sendPlayerReady({ userId, isReady, });
             this.sendAllPlayerReady();
           }
-          console.log(allAreReady);
+          // console.log(allAreReady);
           break;
         }
         case USER_ACTION.CONFIRM_CONTINUE_GAME:
@@ -142,12 +160,14 @@ class GameSocket {
         }
       }
     });
-    return () => this.removeListeners(socket);
+
+    return ({
+      name: 'userActionListener',
+      listener: () => this.removeListeners(socket),
+    });
   }
-  removeListeners(socket) {
-    socket.removeAllListeners([
-      SOCKET_EVENT.USER_ACTION,
-    ]);
+  removeListeners(socket, listeners=[SOCKET_EVENT.USER_ACTION,]) {
+    socket.removeAllListeners(listeners);
   }
   sendAllInRoom(payload, socketEvent=SOCKET_EVENT.GAME_STATUS) {
     this.io
@@ -260,7 +280,9 @@ class GamesManager {
         roomId,
         user,
       });
+
       gameRoom.sendEnterMes({ roomId, user, });
+      gameRoom.onListenUserActions(socket, );
     
       return gameRoom;
     };
@@ -273,7 +295,7 @@ class GamesManager {
       if(gameRoom) {
         const users = gameRoom.game.removePlayer(userId);
         gameRoom.sendRemovePlayer({ userId, });
-        gameRoom.removeListenerCb && gameRoom.removeListenerCb();
+        // gameRoom.removeListenerCb && gameRoom.removeListenerCb();
         
         updateRoomCb && updateRoomCb({
           type: 'REMOVE_PLAYER',
@@ -297,6 +319,12 @@ class GamesManager {
       }
 
     };
+  }
+
+  removeListeners(socket) {
+    socket.removeAllListeners([
+      SOCKET_EVENT.USER_ACTION,
+    ]);
   }
 }
 

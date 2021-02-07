@@ -51,6 +51,9 @@ export interface UpdatePlayedResultPayload {
   passedRounds: number
   playedResult?: ComparedPlayedResult
 }
+export interface GameContinuedFailedPayload {
+  gameStatus: GameStatusTypes.SET_CONTINUE_GAME_FAIL
+}
 
 export type GameStatusPayload = 
   PlayerUpdateReadyPayload |
@@ -58,17 +61,19 @@ export type GameStatusPayload =
   AddPlayerPayload | 
   RemovePlayerPayload |
   GameStartPayload |
-  UpdatePlayedResultPayload
+  UpdatePlayedResultPayload |
+  GameContinuedFailedPayload
 
 const ItoSocket = {
   onListenGameStatus({
-    onAddPlayer, onRemovePlayer, onUpdatePlayerReady, onUpdateAllPlayers, onGameStart, onGetComparedResult,
+    onAddPlayer, onRemovePlayer, onUpdatePlayerReady, onUpdateAllPlayers, onGameStart, onGetComparedResult, onGameContinuedFailed
   }: {
     onRemovePlayer?: Callback
     onAddPlayer?: Callback
     onUpdatePlayerReady?: Callback
     onUpdateAllPlayers?: Callback
     onGameStart?: (payload: GameStartPayload) => any
+    onGameContinuedFailed?: Callback
     onGetComparedResult?: (payload: UpdatePlayedResultPayload) => any
   }) {
     socket.on(SOCKET_EVENT.GAME_STATUS, (payload: GameStatusPayload) => {
@@ -88,6 +93,8 @@ const ItoSocket = {
           }
           case GameStatusTypes.SET_PLAYED_RESULT:
             return onGetComparedResult && onGetComparedResult(payload);
+          case GameStatusTypes.SET_CONTINUE_GAME_FAIL:
+            return onGameContinuedFailed && onGameContinuedFailed();
           default:
             break;
         }

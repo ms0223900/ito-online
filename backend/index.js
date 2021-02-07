@@ -96,7 +96,7 @@ class Player {
             // updateRoom({}, payload);
           })
           .then(res => {
-            res.initGame(socket, io);
+            res.initGame(io, socket);
           });
         // console.log(gamesManager);
       }
@@ -104,6 +104,7 @@ class Player {
     socket.on(SOCKET_EVENT.LEAVE_ROOM, e => {
       if(e && e.userId && e.roomId) {
         console.log(player, ' leave room.');
+        gamesManager.removeListeners(socket);
         gamesManager.handlePlayerExit(e.roomId, e.userId)(
           // (payload) => {
           //   deleteRoom({}, payload);
@@ -120,6 +121,7 @@ class Player {
     socket.on('disconnect', e => {
       console.log(player, 'user disconnected.');
       if(player.userId && player.roomId) {
+        gamesManager.removeListeners(socket);
         gamesManager.handlePlayerExit(player.roomId, player.userId)(
           // (payload) => {
           //   deleteRoom({}, payload);
