@@ -6,7 +6,8 @@
   "scripts": {
     "serve": "node index",
     "start": "NODE_ENV=production node index",
-    "dev": "NODE_ENV=develop node index"
+    "dev": "NODE_ENV=develop node index",
+    "deploy": "heroku container:push web -a ancient-refuge-15131&& heroku container:release web -a ancient-refuge-15131"
   },
   "keywords": [],
   "author": "",
