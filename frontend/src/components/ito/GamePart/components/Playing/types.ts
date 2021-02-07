@@ -14,7 +14,7 @@ export interface ThemeQuestionProps {
 }
 
 export interface PlayAreaProps {
-  latestCardNumber: number
+  latestCardNumber: number | null
   cardNumberNow: number | null
   onPlayCard: Callback
 }

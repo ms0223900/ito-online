@@ -7,16 +7,24 @@ const PlayArea = (props: PlayAreaProps) => {
   return (
     <Box>
       <Box>
-        {typeof props.cardNumberNow === 'number' ? (
-          <Typography variant={'h3'}>
-            {props.cardNumberNow}
-          </Typography>
-        ) : (
-          <Typography>
-            {'Waiting other play card'}
-            {'Latest Card: ' + props.latestCardNumber}
-          </Typography>
-        )}
+        <Box>
+          {props.latestCardNumber && (
+            <Typography>
+              {'Latest Card: ' + (props.latestCardNumber)}
+            </Typography>
+          )}
+        </Box>
+        <Box>
+          {typeof props.cardNumberNow === 'number' ? (
+            <Typography variant={'h3'}>
+              {props.cardNumberNow}
+            </Typography>
+          ) : (
+            <Typography>
+              {'Waiting other play card...'}
+            </Typography>
+          )}
+        </Box>
       </Box>
       <CTAButton
         disabled={!props.cardNumberNow}

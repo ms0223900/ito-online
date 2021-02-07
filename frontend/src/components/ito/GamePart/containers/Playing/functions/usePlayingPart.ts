@@ -179,7 +179,7 @@ const usePlayingPart = () => {
         isConfirmed: isConfirmedContinue,
         isResultOpen,
         cardNumberNow: status.myCardNow,
-        latestCardNumber: status.latestCard,
+        latestCardNumber: playedResult ? playedResult.nextCardNumber : null,
         maxLife: status.life.maxLife,
         remainLife: status.life.lifeNow,
         resultPayload: playedResult,
