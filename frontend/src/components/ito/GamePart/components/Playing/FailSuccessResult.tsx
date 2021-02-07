@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Button, makeStyles, Typography } from '@material-ui/core';
 import { FailSuccessResultProps } from './types';
 import { PlayedResultType } from 'common-types';
+import CTAButton from 'components/ito/Common/components/CTAButton';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -31,9 +32,9 @@ const FailSuccessResult = (props: FailSuccessResultProps) => {
           `${nextCardNumber}${getOperator(resultType)}${prevCardNumber}`}
       </Typography>
       <Typography variant={'h4'}>{resultType}</Typography> 
-      <Button onClick={onConfirmResult}>
+      <CTAButton color={'default'} onClick={onConfirmResult}>
         {resultType}
-      </Button>             
+      </CTAButton>             
     </Box>
   );
 };

@@ -68,7 +68,6 @@ const PlayedResult = (props: PlayedResultProps) => {
       <Modal 
         className={classes.modal}
         open={isResultOpen}
-        onClose={onCloseResult}
       >
         <Paper className={classes.content}>
           {getModalResult(props)}
