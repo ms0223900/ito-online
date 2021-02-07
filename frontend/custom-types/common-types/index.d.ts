@@ -35,7 +35,8 @@ declare module "common-types" {
     'FAIL' | // 此比較失敗(還沒結束)
     'SUCCESS' | // 此比較成功(還沒結束)
     'GAME_OVER' | // 遊戲結束
-    'CONTINUED' // 繼續下一輪
+    'CONTINUED' | // 繼續下一輪
+    'CONTINUED_FAILED' // 繼續失敗（人數不足）
 
   interface GameLifeStatus {
     lifeNow: number

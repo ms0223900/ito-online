@@ -23,30 +23,31 @@ export const getModalResult = (props: PlayedResultProps) => {
   const { resultPayload } = props;
 
   if(resultPayload) {
-    if(resultPayload.resultType === 'CONTINUED') {
-      return (
-        <ContinuedResult 
-          {...props} 
-          passedRounds={resultPayload.passedRounds}
-        />
-      );
-    } 
-    
-    else if(resultPayload.resultType === 'GAME_OVER') {
-      return (
-        <GameoverResult 
-          {...props} 
-          passedRounds={resultPayload.passedRounds}
-        />
-      );
+    switch (resultPayload.resultType) {
+      case 'CONTINUED':
+      case 'CONTINUED_FAILED':
+        return (
+          <ContinuedResult 
+            {...props}
+            isContinuedFailed={resultPayload.resultType === 'CONTINUED_FAILED'}
+            passedRounds={resultPayload.passedRounds}
+          />
+        );
+      case 'GAME_OVER':
+        return (
+          <GameoverResult 
+            {...props} 
+            passedRounds={resultPayload.passedRounds}
+          />
+        );
+      default:
+        return (
+          <FailSuccessResult 
+            {...resultPayload}
+            onConfirmResult={props.onCloseResult}
+          />
+        );
     }
-
-    return (
-      <FailSuccessResult 
-        {...resultPayload}
-        onConfirmResult={props.onCloseResult}
-      />
-    );
   }
 };
 

@@ -26,6 +26,7 @@ export interface FailSuccessResultProps extends PlayedResultPayload {
 export interface PassedRoundsInfoProps extends Pick<PlayedResultPayload, 'passedRounds'> {
 }
 export interface ContinuedResultProps extends PassedRoundsInfoProps {
+  isContinuedFailed?: boolean
   isConfirmed: boolean
   onContinue: Callback
   onOverGame: Callback

@@ -141,16 +141,25 @@ const usePlayingPart = () => {
     history.push(ROUTES.rooms);
   }, []);
 
+  const handleContinuedFailed = useCallback(() => {
+    window.alert('Game continued failed :(');
+    setPlayedResult(s => s ? ({
+      ...s,
+      resultType: 'CONTINUED_FAILED',
+    }) : undefined);
+  }, []);
+
   useEffect(() => {
     // 取得最新卡片比較結果、愛心
     const listener = ItoSocket.onListenGameStatus({
       onGetComparedResult: handleGetComparedResult,
       onGameStart: handleGameStart,
+      onGameContinuedFailed: handleContinuedFailed,
     });
     return () => {
       listener();
     };
-  }, [handleGameStart, handleGetComparedResult, roomId, user, userId]);
+  }, [handleContinuedFailed, handleGameStart, handleGetComparedResult, roomId, user, userId]);
   // console.log(gamePlayingStatus);
 
   const onEvents = useMemo(() => ({
