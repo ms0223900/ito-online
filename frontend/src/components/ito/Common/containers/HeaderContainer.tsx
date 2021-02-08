@@ -8,7 +8,7 @@ const HeaderContainer = () => {
   } = useContext(ContextStore);
   
   return (
-    <Header user={user} />
+    <Header user={user} onToggleSetting={() => {}} />
   );
 };
 

@@ -10,6 +10,11 @@ export interface BackButtonProps {
 
 const useStyles = makeStyles(theme => ({
   root: {
+    width: 42,
+    height: 42,
+    borderRadius: 10000,
+    cursor: 'pointer',
+    textAlign: 'center',
     '&:hover': {
       backgroundColor: '#ddd',
     }
@@ -28,7 +33,7 @@ const BackButton = ({
   }, []);
   
   return (
-    <Box className={classes.root} padding={1} onClick={handleBack}>
+    <Box className={classes.root} onClick={handleBack}>
       <ArrowLeftOutlined fontSize={'large'} />
     </Box>
   );
