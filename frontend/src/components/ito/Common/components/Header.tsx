@@ -4,8 +4,9 @@ import BackButton, { BackButtonProps } from './BackButton';
 import { SingleUser } from 'common-types';
 import useCheckIsRoomPage from 'lib/custom-hooks/useCheckIsRoomPage';
 import SettingButton, { SettingButtonProps } from './SettingButton';
+import HintButton, { HintButtonProps } from './HintButton';
 
-export interface HeaderProps extends BackButtonProps, SettingButtonProps {
+export interface HeaderProps extends BackButtonProps, SettingButtonProps, HintButtonProps {
   user: SingleUser
 }
 
@@ -18,6 +19,12 @@ const useStyles = makeStyles(theme => ({
     top: 0,
     left: 0,
   },
+  hintBTN: {
+    position: 'absolute',
+    top: 0,
+    right: 40,
+    height: '100%',
+  },
   settingBTN: {
     position: 'absolute',
     top: 0,
@@ -28,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
-  }
+  },
 }));
 
 const Header = (props: HeaderProps) => {
@@ -50,6 +57,9 @@ const Header = (props: HeaderProps) => {
           <Typography variant={'h4'}>
             {'Ito Online'}
           </Typography>
+        </Box>
+        <Box className={classes.hintBTN}>
+          <HintButton {...props} />
         </Box>
         <Box className={classes.settingBTN}>
           <SettingButton {...props} />
