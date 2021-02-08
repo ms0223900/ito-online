@@ -9,13 +9,17 @@ const useHeader = () => {
   } = useContext(ContextStore);
   
   const {
+    toggle: hintToggle,
     handleToggle: handleToggleHint,
   } = useToggle();
   const {
+    toggle: settingToggle,
     handleToggle: handleToggleSetting,
   } = useToggle();
 
   return ({
+    hintToggle,
+    settingToggle,
     handleToggleHint,
     handleToggleSetting,
     user,

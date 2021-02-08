@@ -4,6 +4,7 @@ import { PlayedResultPayload, PlayedResultProps } from './types';
 import FailSuccessResult from './FailSuccessResult';
 import ContinuedResult from './ContinuedResult';
 import GameoverResult from './GameoverResult';
+import ModalWrapper from 'components/ito/Common/components/wrappers/ModalWrapper';
 
 const useStyles = makeStyles(theme => ({
   modal: {
@@ -49,6 +50,7 @@ export const getModalResult = (props: PlayedResultProps) => {
         );
     }
   }
+  return null;
 };
 
 const PlayedResult = (props: PlayedResultProps) => {
@@ -64,16 +66,9 @@ const PlayedResult = (props: PlayedResultProps) => {
   }
 
   return (
-    <>
-      <Modal 
-        className={classes.modal}
-        open={isResultOpen}
-      >
-        <Paper className={classes.content}>
-          {getModalResult(props)}
-        </Paper>
-      </Modal>
-    </>
+    <ModalWrapper open={isResultOpen} onClose={onCloseResult}>
+      {getModalResult(props)}
+    </ModalWrapper>
   );
 };
 
