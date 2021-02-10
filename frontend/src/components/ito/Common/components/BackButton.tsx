@@ -3,6 +3,7 @@ import { Box, makeStyles } from '@material-ui/core';
 import { ArrowLeftOutlined } from '@material-ui/icons';
 import { Callback } from 'common-types';
 import { useHistory } from 'react-router';
+import ROUTES from 'constants/ROUTES';
 
 export interface BackButtonProps {
   onBack?: Callback
@@ -27,8 +28,13 @@ const BackButton = ({
   const classes = useStyles();
 
   const history = useHistory();
+  console.log(history);
   const handleBack = useCallback(() => {
-    history.goBack();
+    if(history.action === 'POP') {
+      history.push(ROUTES.homepage);
+    } else {
+      history.goBack();
+    }
     onBack && onBack();
   }, []);
   
