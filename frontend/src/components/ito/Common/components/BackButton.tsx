@@ -28,7 +28,7 @@ const BackButton = ({
   const classes = useStyles();
 
   const history = useHistory();
-  console.log(history);
+  // console.log(history);
   const handleBack = useCallback(() => {
     if(history.action === 'POP') {
       history.push(ROUTES.homepage);

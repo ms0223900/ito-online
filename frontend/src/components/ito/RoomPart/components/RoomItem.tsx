@@ -30,12 +30,12 @@ const RoomItem = (props: RoomItemProps) => {
               {props.room.name || props.room.id}
             </Typography>
           </Box>
-          <Box>
+          {/* <Box>
             <AccountCircle fontSize={'large'} />
             <Box component={'span'}>
               {props.playersAmount}
             </Box>
-          </Box>
+          </Box> */}
         </Box>
       </ListItem>
     </Link>

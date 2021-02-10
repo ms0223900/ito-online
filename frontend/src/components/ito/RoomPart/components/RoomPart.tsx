@@ -3,6 +3,7 @@ import { Box, Button, CircularProgress, Divider } from '@material-ui/core';
 import RoomList from './RoomList';
 import { RoomPartProps } from './types';
 import CTAButton from 'components/ito/Common/components/CTAButton';
+import IntlFormattedMessage from 'components/ito/Common/components/intl/IntlFormattedMessage';
 
 const RoomPart = (props: RoomPartProps) => {
   return (
@@ -20,16 +21,22 @@ const RoomPart = (props: RoomPartProps) => {
       <CTAButton 
         color={'primary'} 
         variant={'outlined'}
+        fullWidth={true}
         onClick={props.onCreateRoom}
       >
-        {'Create Room'}
+        <IntlFormattedMessage
+          langKey={'roomPart.createNewRoom'}
+        />
       </CTAButton>
       <CTAButton 
         color={'primary'} 
         variant={'outlined'}
+        fullWidth={true}
         onClick={props.onCreateQuestion}
       >
-        {'Create Question'}
+        <IntlFormattedMessage
+          langKey={'roomPart.createNewQuestion'}
+        />
       </CTAButton>
     </Box>
   );

@@ -11,8 +11,8 @@ import WaitingRoomPartContainer from 'components/ito/RoomPart/containers/Waiting
 import HeaderContainer from 'components/ito/Common/containers/HeaderContainer';
 import PlayingPartContainer from 'components/ito/GamePart/containers/Playing/PlayingPartContainer';
 import { IntlProvider } from 'react-intl';
-import useLocale from 'lib/custom-hooks/useLocale';
 import CreateQuestionPartContainer from 'components/ito/Forms/containers/CreateQuestionPartContainer';
+import useLocale from 'locale/locale';
 
 export const socket = io(API_URI);
 

@@ -3,6 +3,7 @@
 declare module "common-types" {
   import { ThemeQuestionProps } from "components/ito/GamePart/components/Playing/types";
   
+  type Locale = 'zh' | 'en'
   type Callback = (...args: any[]) => any;
   
   interface SingleUser {

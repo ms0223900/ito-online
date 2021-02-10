@@ -19,7 +19,7 @@ const initPlayer = {
 
 class ItoGame {
   constructor({
-    minPlayersAmount=2, // 最少遊玩人數
+    minPlayersAmount=3, // 最少遊玩人數
     initLife=3,
     cardAmount=100,
   }) {

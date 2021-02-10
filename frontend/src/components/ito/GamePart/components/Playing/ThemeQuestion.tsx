@@ -21,7 +21,7 @@ const ThemeQuestion = (props: ThemeQuestionProps) => {
         {props.question}
       </Typography>
       <Typography>
-        {props.supplement}
+        {`備註：數字越大，則越${props.supplement}`}
       </Typography>
     </Paper>
   );

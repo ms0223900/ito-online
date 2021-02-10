@@ -1,0 +1,68 @@
+{
+  "zh": {
+    "name": "名稱",
+    "confirm": "確認",
+    "leaveGame": "離開遊戲",
+
+    "roomPart.createNewRoom": "新增房間",
+    "roomPart.createNewQuestion": "新增主題問題",
+    "roomPart.noRooms": "目前沒有房間...",
+
+    "playingPart.playArea.latestCard": "最新卡片（最後出的牌）",
+    "playingPart.playArea.waitingOthers": "等待其他人出牌...",
+    "playingPart.playArea.playCard": "出牌！",
+
+    "playingPart.continuedResult.hint": "遊玩人數不足，遊戲繼續失敗...",
+    "playingPart.continuedResult.confirmContinue": "確認繼續遊戲",
+
+    "playingPart.failSuccessResult.success": "出牌成功！",
+    "playingPart.failSuccessResult.fail": "出牌失敗...",
+    "playingPart.passedRoundsInfo.title": "目前為止，已通過了{passedRounds}回合",
+    
+
+    "createQuestionPart.title": "建立主題問題",
+    "createQuestionPart.desc": "建立主題問題，內容須為某種領域的程度。\n例如: 食物的臭度、海賊王角色的強度、小吃的美味程度...等。",
+    "createQuestionPart.questionInput.placeholder": "填寫主題題目",
+    "createQuestionPart.supplementInput.prefix": "數字越大，則越",
+    "createQuestionPart.supplementInput.placeholder": "輸入程度形容詞（例如強大、難受、開心...等）",
+    "createQuestionPart.confirmCreate": "建立題目",
+    "createQuestionPart.result.success": "成功建立題目！",
+    "createQuestionPart.result.fail": "題目建立失敗...",
+
+    "createRoomPart.roomNameInput.placeholder": "輸入房間名稱",
+    "createRoomPart.creating": "創建中...",
+    "createRoomPart.confirmCreate": "創建房間"
+  },
+  "en": {
+    "name": "名稱",
+    "confirm": "確認",
+    "leaveGame": "離開遊戲",
+
+    "roomPart.createNewRoom": "新增房間",
+    "roomPart.createNewQuestion": "新增主題問題",
+
+    "playingPart.playArea.latestCard": "最新卡片（最後出的牌）",
+    "playingPart.playArea.waitingOthers": "等待其他人出牌...",
+    "playingPart.playArea.playCard": "出牌！",
+
+    "playingPart.continuedResult.hint": "遊玩人數不足，遊戲繼續失敗...",
+    "playingPart.continuedResult.confirmContinue": "確認繼續遊戲",
+
+    "playingPart.failSuccessResult.success": "出牌成功！",
+    "playingPart.failSuccessResult.fail": "出牌失敗...",
+    "playingPart.passedRoundsInfo.title": "目前為止，已通過了{passedRounds}回合",
+    
+
+    "createQuestionPart.title": "建立主題問題",
+    "createQuestionPart.desc": "建立主題問題，內容須為某種領域的程度。\n例如: 食物的臭度、海賊王角色的強度、小吃的美味程度...等。",
+    "createQuestionPart.questionInput.placeholder": "填寫主題題目",
+    "createQuestionPart.supplementInput.prefix": "數字越大，則越",
+    "createQuestionPart.supplementInput.placeholder": "輸入程度形容詞（例如強大、難受、開心...等）",
+    "createQuestionPart.confirmCreate": "建立題目",
+    "createQuestionPart.result.success": "成功建立題目！",
+    "createQuestionPart.result.fail": "題目建立失敗...",
+
+    "createRoomPart.roomNameInput.placeholder": "輸入房間名稱",
+    "createRoomPart.confirmCreate": "創建房間"
+  }
+}

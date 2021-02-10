@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, List, Typography } from '@material-ui/core';
 import RoomItem from './RoomItem';
 import { RoomListProps } from './types';
+import IntlFormattedMessage from 'components/ito/Common/components/intl/IntlFormattedMessage';
 
 const RoomList = (props: RoomListProps) => {
   return (
@@ -10,11 +11,12 @@ const RoomList = (props: RoomListProps) => {
         <RoomItem key={i} {...r} />
       ))}
       {props.roomListData.length === 0 && (
-        <Typography variant={'h5'} color={'initial'} style={{
-          opacity: 0.3,
-        }}>
-          {'No Rooms found :('}
-        </Typography>
+        <IntlFormattedMessage 
+          variant={'h5'} color={'initial'} style={{
+            opacity: 0.3,
+          }}
+          langKey={'roomPart.noRooms'}
+        />
       )}
     </List>
   );
