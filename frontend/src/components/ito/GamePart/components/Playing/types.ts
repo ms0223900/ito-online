@@ -10,7 +10,7 @@ export interface PlayedResultPayload {
 
 export interface ThemeQuestionProps {
   question: string
-  supplement?: string
+  supplement: string
 }
 
 export interface PlayAreaProps {

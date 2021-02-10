@@ -16,8 +16,7 @@ const mockQuestions = [
 
 const getThemeQuestions = async () => {
   try {
-    // const questions = await ThemeQuestion.model.find();
-    const questions = mockQuestions;
+    const questions = await ThemeQuestion.model.find();
     return questions;
   } catch (error) {
     throw new Error(error);

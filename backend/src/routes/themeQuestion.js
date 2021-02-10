@@ -1,4 +1,4 @@
-const { createThemeQuestion, deleteThemeQuestion } = require("../resolvers/themeQuestion");
+const { createThemeQuestion, deleteThemeQuestion, getThemeQuestions } = require("../resolvers/themeQuestion");
 
 const questionPost = (app) => app.post('/theme-question', async (req, res) => {
   try {
@@ -7,7 +7,9 @@ const questionPost = (app) => app.post('/theme-question', async (req, res) => {
       res.status(400).send({
         message: errMes
       });
+      return;
     }
+
     const {
       body: {
         type, content, supplement, id,
@@ -26,8 +28,8 @@ const questionPost = (app) => app.post('/theme-question', async (req, res) => {
         res.status(400).send({
           message: errMes
         });
-        break;
       }
+      break;
     case 'DELETE':
       if(id) {
         const _res = await deleteThemeQuestion({}, { id, });
@@ -37,8 +39,8 @@ const questionPost = (app) => app.post('/theme-question', async (req, res) => {
         res.status(400).send({
           message: errMes
         });
-        break;
       }
+      break;
     default:
       const errMes = 'Only CREATE, DELETE are supported.';
       res.status(400).send({
@@ -51,8 +53,14 @@ const questionPost = (app) => app.post('/theme-question', async (req, res) => {
   }
 });
 
+const questionGet = app => app.get('/theme-questions', async (req, res) => {
+  const questions = await getThemeQuestions();
+  res.send(questions);
+});
+
 function useThemeQuestionRoutes(app) {
   questionPost(app);
+  questionGet(app);
 }
 
 module.exports = {

@@ -34,6 +34,7 @@ const makeGamePlayingPayload = ({
       const status: GamePlayingStatus = {
         question: {
           question: matchedPlayerStatus.question.content,
+          supplement: matchedPlayerStatus.question.supplement,
         },
         isPlaying: true,
         life: matchedPlayerStatus.life,

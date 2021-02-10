@@ -50,9 +50,14 @@ declare module "common-types" {
     myCardNow: number | null
   }
 
+  interface SingleThemeQuestion {
+    content: string
+    supplement: string
+  }
+
   interface SinglePlayerCardAndQuestion {
     player: SingleUser
-    question: { content: string }
+    question: SingleThemeQuestion
     life: GameLifeStatus
     card: number
     latestCard: number
