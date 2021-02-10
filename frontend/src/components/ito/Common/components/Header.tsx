@@ -46,7 +46,7 @@ const Header = (props: HeaderProps) => {
   const { isRoomPage, } = useCheckIsRoomPage();
 
   return (
-    <Box>
+    <Box paddingBottom={2}>
       <Box position={'relative'}>
         <Box className={classes.backBTN}>
           {!isRoomPage && (

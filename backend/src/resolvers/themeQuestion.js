@@ -30,13 +30,34 @@ const getRandomThemeQuestion = async () => {
   return question;
 };
 
-const createThemeQuestions = async (_, { content, }, ctx) => {
-  
+const createThemeQuestion = async (_, { content, supplement, }, ctx) => {
+  const newQuestion = new ThemeQuestion.model({
+    content,
+    supplement,
+  });
+  console.log('New Question: ', newQuestion);
+  const question = await newQuestion.save();
+  return question;
+};
+
+const deleteThemeQuestion = async (_, { id, }, ctx) => {
+  try {
+    // const rooms = await Room.model.find();
+    await ThemeQuestion.model.findByIdAndDelete(id, _, (err, _, res) => {
+      console.log(res);
+    });
+    return ({
+      message: `ThemeQuestion: ${id} deleted successfully.`
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 module.exports = {
   getThemeQuestions,
   getRandomThemeQuestion,
-  createThemeQuestions,
+  createThemeQuestion,
+  deleteThemeQuestion,
 };
 

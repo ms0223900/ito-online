@@ -8,6 +8,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'space-around',
+    whiteSpace: 'pre-wrap',
     // textAlign: 'center',
   },
   textArea: {
@@ -24,6 +25,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const CreateQuestionPart = ({
+  createDisabled,
   values,
   onValuesChange,
   onCreateQuestion,
@@ -36,7 +38,7 @@ const CreateQuestionPart = ({
         <Box paddingBottom={2}>
           <Typography align={'center'} variant={'h5'}>{'Create Theme Question'}</Typography>
           <Typography>
-            {'建立主題，內容須為某種程度。\n例如: 食物的臭度、海賊王角色的強度、小吃的美味程度...等'}
+            {'建立主題問題，內容須為某種領域的程度。\n例如: 食物的臭度、海賊王角色的強度、小吃的美味程度...等'}
           </Typography>
         </Box>
         <Box paddingY={1}>
@@ -52,7 +54,7 @@ const CreateQuestionPart = ({
         <Grid container alignItems={'center'}>
           <Grid item xs={4}>
             <Typography variant={'h6'}>
-              {'數字越大則越'}
+              {'數字越大，則越'}
             </Typography>
           </Grid>
           <Grid item xs={8}>
@@ -67,7 +69,7 @@ const CreateQuestionPart = ({
         </Grid>
       </Box>
       <Divider />
-      <CTAButton onClick={onCreateQuestion}>
+      <CTAButton disabled={createDisabled} onClick={onCreateQuestion}>
         {'Create Question'}
       </CTAButton>
     </Box>

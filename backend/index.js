@@ -31,6 +31,7 @@ console.log(process.env.NODE_ENV);
 
 const express = require('express');
 const { deleteRoom, updateRoom } = require('./src/resolvers/room.js');
+const { useThemeQuestionRoutes } = require('./src/routes/themeQuestion.js');
 const app = require('express')();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server, {
@@ -54,6 +55,7 @@ app.get('/users', async (req, res) => {
   res.send(users);
 });
 useRoomRoutes(app);
+useThemeQuestionRoutes(app);
 
 
 class Player {

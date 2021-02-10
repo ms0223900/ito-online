@@ -18,6 +18,10 @@ function useInputValues<Key extends string>({
     }));
   }, []);
 
+  const handleClearAllValues = useCallback(() => {
+    setVals(initValues);
+  }, []);
+
   const handleChangeValue = useCallback((key: Key) => (e: Event) => {
     setVals(v => ({
       ...v,
@@ -32,6 +36,7 @@ function useInputValues<Key extends string>({
   return ({
     values,
     handleChangeValue,
+    handleClearAllValues,
     handleClearInput,
   });
 };

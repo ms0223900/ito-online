@@ -17,6 +17,7 @@ export interface CreateRoomPartProps extends BasicFormProps {
 
 export type QuestionInputKey = 'QUESTION' | 'SUPPLEMENT'
 export interface CreateQuestionPartProps {
+  createDisabled?: boolean
   values: Record<QuestionInputKey, string>
   onValuesChange: (key: QuestionInputKey) => TextFieldProps['onChange']
   onCreateQuestion: Callback

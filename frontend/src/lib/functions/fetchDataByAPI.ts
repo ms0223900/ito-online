@@ -36,6 +36,7 @@ async function fetchDataByAPI<DefaultRes>({
     return res_1;
   } catch (rej) {
     console.log(rej);
+    throw new Error(rej);
     return defaultRes;
   }
 }
