@@ -16,6 +16,10 @@ const useRoomPart = () => {
     history.push(ROUTES.createRoom);
   }, [history]);
 
+  const handleCreateQuestion = useCallback(() => {
+    history.push(ROUTES.createQuestion);
+  }, []);
+
   const handleEnterRoom: EnterRoomFn = useCallback((roomId) => () => {
     const URI = 
     history.push(ROUTES.room, );
@@ -33,6 +37,7 @@ const useRoomPart = () => {
     ...fetched,
     handleEnterRoom,
     handleCreateRoom,
+    handleCreateQuestion,
     roomListData,
   });
 };

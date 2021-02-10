@@ -12,6 +12,7 @@ const RoomPartContainer = () => {
       roomListData={roomPartState.roomListData}
       onEnterRoom={roomPartState.handleEnterRoom}
       onCreateRoom={roomPartState.handleCreateRoom}
+      onCreateQuestion={roomPartState.handleCreateQuestion}
     />
   );
 };

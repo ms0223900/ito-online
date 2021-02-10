@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { Box, makeStyles, Modal, ModalProps, Paper } from '@material-ui/core';
+import { Box, Button, makeStyles, Modal, ModalProps, Paper } from '@material-ui/core';
+import { Close } from '@material-ui/icons';
 
 export interface ModalWrapperProps extends Omit<ModalProps, 'children'> {
   children: ReactNode
@@ -12,10 +13,12 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   content: {
+    position: 'relative',
     backgroundColor: '#fff',
     padding: theme.spacing(1),
     borderRadius: theme.spacing(1),
-    maxWidth: '60vw',
+    width: 600,
+    maxWidth: '100%',
     maxHeight: '90vh',
     overflow: 'scroll',
   }
@@ -30,6 +33,14 @@ const ModalWrapper = (props: ModalWrapperProps) => {
       {...props}
     >
       <Paper className={classes.content}>
+        <Button
+          onClick={props.onClose as any}
+          style={{
+            position: 'absolute', top: 0, right: 0, zIndex: 10,
+          }}
+        >
+          <Close />
+        </Button>
         {props.children}
       </Paper>
     </Modal>

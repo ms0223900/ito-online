@@ -12,12 +12,19 @@ import HeaderContainer from 'components/ito/Common/containers/HeaderContainer';
 import PlayingPartContainer from 'components/ito/GamePart/containers/Playing/PlayingPartContainer';
 import { IntlProvider } from 'react-intl';
 import useLocale from 'lib/custom-hooks/useLocale';
+import CreateQuestionPartContainer from 'components/ito/Forms/containers/CreateQuestionPartContainer';
 
 export const socket = io(API_URI);
 
 const useStyles = makeStyles(() => ({
   root: {
-    maxWidth: 500, 
+    display: 'flex',
+    flexDirection: 'column',
+    // justifyContent: 'center',
+    maxWidth: 500,
+    height: '100%',
+    minHeight: '100vh',
+    
   },
 
 }));
@@ -30,8 +37,8 @@ function App() {
 
   return (
     <IntlProvider locale={locale} messages={messages}>
+      <HeaderContainer />
       <Container className={classes.root}>
-        <HeaderContainer />
         <Switch>
           <Route
             exact
@@ -55,6 +62,7 @@ function App() {
           />
           <Route 
             path={ROUTES.createQuestion}
+            component={CreateQuestionPartContainer}
           />
           <Route 
             path={ROUTES.createRoom}
