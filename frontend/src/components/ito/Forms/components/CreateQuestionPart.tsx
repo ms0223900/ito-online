@@ -78,7 +78,10 @@ const CreateQuestionPart = ({
         </Grid>
       </Box>
       <Divider />
-      <CTAButton disabled={createDisabled} onClick={onCreateQuestion}>
+      <CTAButton 
+        disabled={loading || createDisabled} 
+        onClick={onCreateQuestion}
+      >
         {loading ? (
           <IntlFormattedMessage 
             langKey={'createQuestionPart.creating'}
