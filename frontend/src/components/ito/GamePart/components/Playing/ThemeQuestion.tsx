@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, makeStyles, Paper, Typography } from '@material-ui/core';
 import { ThemeQuestionProps } from './types';
+import IntlFormattedMessage from 'components/ito/Common/components/intl/IntlFormattedMessage';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -20,9 +21,12 @@ const ThemeQuestion = (props: ThemeQuestionProps) => {
       <Typography variant={'h5'}>
         {props.question}
       </Typography>
-      <Typography>
-        {`備註：數字越大，則越${props.supplement}`}
-      </Typography>
+      <IntlFormattedMessage 
+        langKey={'createQuestionPart.supplementInput.prefix'}
+        values={{
+          supplement: props.supplement,
+        }}
+      />
     </Paper>
   );
 };

@@ -2,10 +2,14 @@ import { CREATE_QUESTION_URI } from "constants/API";
 import useFetch from "lib/custom-hooks/useFetch";
 import useInputValues from "lib/custom-hooks/useInputValues";
 import { useCallback, useEffect } from "react";
+import { useIntl } from "react-intl";
 import { QuestionInputKey } from "../../components/types";
 
 
 const useCreateQuestionPart = () => {
+  const {
+    messages,
+  } = useIntl();
   const {
     values,
     handleChangeValue,
@@ -35,13 +39,13 @@ const useCreateQuestionPart = () => {
         });
       }
     } catch (error) {
-      window.alert('Create failed... :(');
+      window.alert(`${messages['createQuestionPart.result.fail']}(${error})`);
     }
   }, [values.QUESTION, values.SUPPLEMENT]);
 
   useEffect(() => {
     if(fetched.responseData) {
-      window.alert('Question created successfully :)');
+      window.alert(messages['createQuestionPart.result.success']);
       handleClearAllValues();
     }
   }, [fetched.responseData]);

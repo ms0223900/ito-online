@@ -2,15 +2,19 @@ import React from 'react';
 import { Box, Paper, Typography } from '@material-ui/core';
 import { PlayAreaProps } from './types';
 import CTAButton from 'components/ito/Common/components/CTAButton';
+import IntlFormattedMessage from 'components/ito/Common/components/intl/IntlFormattedMessage';
 
 const PlayArea = (props: PlayAreaProps) => {
   return (
     <Box>
       <Box>
         {props.latestCardNumber && (
-          <Typography align={'center'}>
-            {'Latest Card: ' + (props.latestCardNumber)}
-          </Typography>
+          <IntlFormattedMessage 
+            langKey={'playingPart.playArea.latestCard'}
+            values={{
+              latestCard: props.latestCardNumber,
+            }}
+          />
         )}
       </Box>
       <Box paddingY={2}>
@@ -21,18 +25,18 @@ const PlayArea = (props: PlayAreaProps) => {
                 {props.cardNumberNow}
               </Typography>
             ) : (
-              <Typography>
-                {'Waiting other play card...'}
-              </Typography>
+              <IntlFormattedMessage 
+                langKey={'playingPart.playArea.waitingOthers'}
+              />
             )}
           </Box>
           <CTAButton
             disabled={!props.cardNumberNow}
             onClick={props.onPlayCard}
           >
-            <Typography>
-              {'Play Card'}
-            </Typography>
+            <IntlFormattedMessage 
+              langKey={'playingPart.playArea.playCard'}
+            />
           </CTAButton>
         </Paper>
       </Box>

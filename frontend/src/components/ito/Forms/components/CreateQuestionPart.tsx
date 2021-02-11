@@ -2,6 +2,8 @@ import React from 'react';
 import { Box, Button, Divider, Grid, makeStyles, TextareaAutosize, TextField, Typography } from '@material-ui/core';
 import { CreateQuestionPartProps } from './types';
 import CTAButton from 'components/ito/Common/components/CTAButton';
+import IntlFormattedMessage from 'components/ito/Common/components/intl/IntlFormattedMessage';
+import { useIntl } from 'react-intl';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -31,20 +33,25 @@ const CreateQuestionPart = ({
   onCreateQuestion,
 }: CreateQuestionPartProps) => {
   const classes = useStyles();
+  const { messages } = useIntl();
 
   return (
     <Box className={classes.root}>
       <Box paddingBottom={2}>
         <Box paddingBottom={2}>
-          <Typography align={'center'} variant={'h5'}>{'Create Theme Question'}</Typography>
-          <Typography>
-            {'建立主題問題，內容須為某種領域的程度。\n例如: 食物的臭度、海賊王角色的強度、小吃的美味程度...等'}
-          </Typography>
+          <IntlFormattedMessage 
+            align={'center'} 
+            variant={'h5'}
+            langKey={'createQuestionPart.title'}
+          />
+          <IntlFormattedMessage 
+            langKey={'createQuestionPart.desc'}
+          />
         </Box>
         <Box paddingY={1}>
           <TextareaAutosize
             className={classes.textArea}
-            placeholder={'填寫主題題目'}
+            placeholder={messages['createQuestionPart.questionInput.placeholder'] as any}
             autoFocus={true}
             rowsMin={4}
             value={values['QUESTION']}
@@ -53,13 +60,14 @@ const CreateQuestionPart = ({
         </Box>
         <Grid container alignItems={'center'}>
           <Grid item xs={4}>
-            <Typography variant={'h6'}>
-              {'數字越大，則越'}
-            </Typography>
+            <IntlFormattedMessage 
+              variant={'h6'}
+              langKey={'createQuestionPart.supplementInput.prefix'}
+            />
           </Grid>
           <Grid item xs={8}>
             <TextField
-              placeholder={'輸入程度形容詞（例如強大、難受、開心...等）'}
+              placeholder={messages['createQuestionPart.supplementInput.placeholder'] as any}
               variant={'outlined'}
               fullWidth={true}
               value={values['SUPPLEMENT']}
@@ -70,7 +78,9 @@ const CreateQuestionPart = ({
       </Box>
       <Divider />
       <CTAButton disabled={createDisabled} onClick={onCreateQuestion}>
-        {'Create Question'}
+        <IntlFormattedMessage 
+          langKey={'createQuestionPart.confirmCreate'}
+        />
       </CTAButton>
     </Box>
   );

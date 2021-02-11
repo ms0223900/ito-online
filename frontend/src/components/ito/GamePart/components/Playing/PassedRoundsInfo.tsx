@@ -11,7 +11,7 @@ const PassedRoundsInfo = ({
   
   return (
     <Box paddingY={1}>
-      <Typography variant={'h5'} color={'primary'}>
+      <Typography variant={'h5'} color={'primary'} align={'center'}>
         {mes}
       </Typography>
     </Box>

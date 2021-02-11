@@ -3,6 +3,7 @@ import { Box, Button, makeStyles, Typography } from '@material-ui/core';
 import { FailSuccessResultProps } from './types';
 import { PlayedResultType } from 'common-types';
 import CTAButton from 'components/ito/Common/components/CTAButton';
+import IntlFormattedMessage from 'components/ito/Common/components/intl/IntlFormattedMessage';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,7 +34,11 @@ const FailSuccessResult = (props: FailSuccessResultProps) => {
       </Typography>
       <Typography variant={'h4'}>{resultType}</Typography> 
       <CTAButton color={'default'} onClick={onConfirmResult}>
-        {resultType}
+        {resultType === 'SUCCESS' ? (
+          <IntlFormattedMessage langKey={'playingPart.failSuccessResult.success'} />
+        ) : (
+          <IntlFormattedMessage langKey={'playingPart.failSuccessResult.fail'} />
+        )}
       </CTAButton>             
     </Box>
   );

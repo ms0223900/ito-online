@@ -8,16 +8,17 @@
     "roomPart.createNewQuestion": "新增主題問題",
     "roomPart.noRooms": "目前沒有房間...",
 
-    "playingPart.playArea.latestCard": "最新卡片（最後出的牌）",
+    "playingPart.playArea.latestCard": "最新卡片（最後出的牌）：{latestCard}",
     "playingPart.playArea.waitingOthers": "等待其他人出牌...",
     "playingPart.playArea.playCard": "出牌！",
 
     "playingPart.continuedResult.hint": "遊玩人數不足，遊戲繼續失敗...",
     "playingPart.continuedResult.confirmContinue": "確認繼續遊戲",
+    "playingPart.continuedResult.confirmedWaiting": "等待其他人確認中...",
 
     "playingPart.failSuccessResult.success": "出牌成功！",
     "playingPart.failSuccessResult.fail": "出牌失敗...",
-    "playingPart.passedRoundsInfo.title": "目前為止，已通過了{passedRounds}回合",
+    "playingPart.passedRoundsInfo.title": "目前為止，已通過了{passedRounds}回合！",
     
 
     "createQuestionPart.title": "建立主題問題",
