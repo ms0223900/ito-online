@@ -3,6 +3,7 @@
     "name": "名稱",
     "confirm": "確認",
     "leaveGame": "離開遊戲",
+    "questionList.title": "主題問題清單",
 
     "roomPart.createNewRoom": "新增房間",
     "roomPart.createNewQuestion": "新增主題問題",
@@ -23,6 +24,8 @@
     
 
     "createQuestionPart.title": "建立主題問題",
+    "createQuestionPart.toggleAllQuestions.display": "顯示所有主題問題",
+    "createQuestionPart.toggleAllQuestions.hide": "隱藏所有主題問題",
     "createQuestionPart.desc": "建立主題問題，內容須為某種領域的程度。\n例如: 食物的臭度、海賊王角色的強度、小吃的美味程度...等。",
     "createQuestionPart.questionInput.placeholder": "填寫主題題目",
     "createQuestionPart.supplementInput.prefix": "數字越大，則越",

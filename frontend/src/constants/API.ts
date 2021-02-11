@@ -8,3 +8,4 @@ export const API_URI =
 export const QUERY_ROOM_URI = API_URI + '/rooms';
 export const CREATE_ROOM_URI = API_URI + '/room';
 export const CREATE_QUESTION_URI = API_URI + '/theme-question';
+export const QUERY_QUESTIONS_URI = API_URI + '/theme-questions';

@@ -1,6 +1,7 @@
 import { CREATE_QUESTION_URI } from "constants/API";
 import useFetch from "lib/custom-hooks/useFetch";
 import useInputValues from "lib/custom-hooks/useInputValues";
+import useToggle from "lib/custom-hooks/useToggle";
 import { useCallback, useEffect } from "react";
 import { useIntl } from "react-intl";
 import { QuestionInputKey } from "../../components/types";
@@ -20,6 +21,10 @@ const useCreateQuestionPart = () => {
       SUPPLEMENT: '',
     }
   });
+  const {
+    toggle: toggleDisplayQuestions,
+    handleToggle: handleToggleDisplayQuestions,
+  } = useToggle();
   const fetched = useFetch({
     apiPath: CREATE_QUESTION_URI,
     initResponseData: undefined,
@@ -57,11 +62,13 @@ const useCreateQuestionPart = () => {
   const isAvailableCreate = values.QUESTION && values.SUPPLEMENT;
 
   return ({
+    toggleDisplayQuestions,
     loading: fetched.loading,
     isAvailableCreate,
     values,
     handleChangeValue,
     handleConfirmCreateQuestion,
+    handleToggleDisplayQuestions,
   });
 };
 

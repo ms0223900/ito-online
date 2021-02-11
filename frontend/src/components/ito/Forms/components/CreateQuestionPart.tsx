@@ -4,6 +4,8 @@ import { CreateQuestionPartProps } from './types';
 import CTAButton from 'components/ito/Common/components/CTAButton';
 import IntlFormattedMessage from 'components/ito/Common/components/intl/IntlFormattedMessage';
 import { useIntl } from 'react-intl';
+import ToggleDisplayWrapper from 'components/ito/Common/components/wrappers/ToggleDisplayWrapper';
+import QuestionListContainer from 'components/ito/SettingPart/containers/QuestionListContainer';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -12,6 +14,10 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'space-around',
     whiteSpace: 'pre-wrap',
     // textAlign: 'center',
+  },
+  questionsWrapper: {
+    maxHeight: 360,
+    overflow: 'auto',
   },
   textArea: {
     padding: theme.spacing(1),
@@ -27,9 +33,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const CreateQuestionPart = ({
+  toggleDisplayQuestions,
   loading,
   createDisabled,
   values,
+  onToggleDisplayQuestions,
   onValuesChange,
   onCreateQuestion,
 }: CreateQuestionPartProps) => {
@@ -38,6 +46,17 @@ const CreateQuestionPart = ({
 
   return (
     <Box className={classes.root}>
+      <Button variant={'outlined'} onClick={onToggleDisplayQuestions}>
+        <IntlFormattedMessage
+          langKey={toggleDisplayQuestions ? 
+            'createQuestionPart.toggleAllQuestions.hide' : 
+            'createQuestionPart.toggleAllQuestions.display'
+          }
+        />
+      </Button>
+      <ToggleDisplayWrapper className={classes.questionsWrapper} isDisplay={toggleDisplayQuestions}>
+        <QuestionListContainer />
+      </ToggleDisplayWrapper>
       <Box paddingBottom={2}>
         <Box paddingBottom={2}>
           <IntlFormattedMessage 
