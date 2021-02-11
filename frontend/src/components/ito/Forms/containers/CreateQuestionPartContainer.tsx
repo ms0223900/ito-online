@@ -5,6 +5,7 @@ import useCreateQuestionPart from './functions/useCreateQuestionPart';
 
 const CreateQuestionPartContainer = () => {
   const {
+    loading,
     isAvailableCreate,
     values,
     handleChangeValue,
@@ -13,6 +14,7 @@ const CreateQuestionPartContainer = () => {
 
   return (
     <CreateQuestionPart
+      loading={loading}
       createDisabled={!isAvailableCreate}
       values={values}
       onValuesChange={handleChangeValue}

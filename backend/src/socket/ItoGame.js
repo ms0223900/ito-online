@@ -28,7 +28,8 @@ class ItoGame {
     this.passedRounds = 0;
     this.init();
     this.cards = this.makeRandomCards(cardAmount);
-    this.questions = [];
+    this.allQuestions = []; // 全部的問題
+    this.playingQuestions = []; // 遊玩中的問題，會越來越少
   }
 
   init() {
@@ -179,11 +180,16 @@ class ItoGame {
   }
 
   async getRandomQuestion() {
-    if(this.questions.length === 0) {
+    if(this.allQuestions.length === 0) {
       const queriedQuestions = await getThemeQuestions();
-      this.questions = queriedQuestions;
+      const shuffledQuestions = _.shuffle(queriedQuestions);
+      this.allQuestions = shuffledQuestions;
+      this.playingQuestions = shuffledQuestions;
     }
-    const question = _.shuffle(this.questions)[0];
+    if(this.playingQuestions.length === 0) {
+      this.playingQuestions = this.allQuestions;
+    }
+    const question = this.playingQuestions.pop();
     return question;
   }
 

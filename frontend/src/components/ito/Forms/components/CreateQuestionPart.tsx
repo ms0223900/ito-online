@@ -27,6 +27,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const CreateQuestionPart = ({
+  loading,
   createDisabled,
   values,
   onValuesChange,
@@ -78,9 +79,15 @@ const CreateQuestionPart = ({
       </Box>
       <Divider />
       <CTAButton disabled={createDisabled} onClick={onCreateQuestion}>
-        <IntlFormattedMessage 
-          langKey={'createQuestionPart.confirmCreate'}
-        />
+        {loading ? (
+          <IntlFormattedMessage 
+            langKey={'createQuestionPart.creating'}
+          />
+        ) : (
+          <IntlFormattedMessage 
+            langKey={'createQuestionPart.confirmCreate'}
+          />
+        )}
       </CTAButton>
     </Box>
   );

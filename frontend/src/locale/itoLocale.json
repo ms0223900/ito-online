@@ -10,6 +10,7 @@
 
     "playingPart.playArea.latestCard": "最新卡片（最後出的牌）：{latestCard}",
     "playingPart.playArea.waitingOthers": "等待其他人出牌...",
+    "playingPart.playArea.supplement": "數字越大，則越{supplement}",
     "playingPart.playArea.playCard": "出牌！",
 
     "playingPart.continuedResult.hint": "遊玩人數不足，遊戲繼續失敗...",
@@ -27,6 +28,7 @@
     "createQuestionPart.supplementInput.prefix": "數字越大，則越",
     "createQuestionPart.supplementInput.placeholder": "輸入程度形容詞（例如強大、難受、開心...等）",
     "createQuestionPart.confirmCreate": "建立題目",
+    "createQuestionPart.creating": "建立題目中...",
     "createQuestionPart.result.success": "成功建立題目！",
     "createQuestionPart.result.fail": "題目建立失敗...",
 

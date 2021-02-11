@@ -57,6 +57,7 @@ const useCreateQuestionPart = () => {
   const isAvailableCreate = values.QUESTION && values.SUPPLEMENT;
 
   return ({
+    loading: fetched.loading,
     isAvailableCreate,
     values,
     handleChangeValue,

@@ -22,7 +22,7 @@ const ThemeQuestion = (props: ThemeQuestionProps) => {
         {props.question}
       </Typography>
       <IntlFormattedMessage 
-        langKey={'createQuestionPart.supplementInput.prefix'}
+        langKey={'playingPart.playArea.supplement'}
         values={{
           supplement: props.supplement,
         }}
