@@ -88,21 +88,6 @@ class GameSocket {
     }
   }
 
-  // 註冊listener相關處理，先留著
-  // findUserListener(userId='', listenerName='') {
-  //   const userListener = this.userListeners.find(u => (
-  //     u.userId === userId && Object.keys(u.listeners).includes(listenerName)
-  //   ));
-  //   return userListener;
-  // }
-  // onListen(userId, listener) {
-  //   // 要先註冊嗎...？
-  //   const userListener = this.findUserListener(userId, listener.name);
-  //   if(!userListener) {
-
-  //   }
-  // }
-
   onListenUserActions(socket) {
     // init this listener
     this.removeListeners(socket);
@@ -206,6 +191,7 @@ class GameSocket {
   }
 
   sendGameStart() {
+    this.game.initBeforeStart();
     this.game.getQuestionAndCard()
       .then(payload => {
         console.log('Game start.');
@@ -217,7 +203,6 @@ class GameSocket {
   }
 
   sendGameContinued() {
-    this.game.initForContinue();
     this.sendGameStart();
   }
 

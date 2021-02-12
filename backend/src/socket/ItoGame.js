@@ -37,7 +37,7 @@ class ItoGame {
     this.life = this.initLife;
     this.latestCard = Infinity; // 第一張卡一定沒問題
   }
-  initForContinue() {
+  initBeforeStart() {
     this.users = this.users.map(u => ({
       ...u,
       isReady: false,
