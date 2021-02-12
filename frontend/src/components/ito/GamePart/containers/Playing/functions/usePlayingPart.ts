@@ -174,7 +174,7 @@ const usePlayingPart = () => {
     return (
       status ? ({
         ...status.question,
-        ...playedResult,
+        // ...playedResult,
         ...onEvents,
         isConfirmed: isConfirmedContinue,
         isResultOpen,

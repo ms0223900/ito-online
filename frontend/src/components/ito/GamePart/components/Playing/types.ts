@@ -25,7 +25,7 @@ export interface FailSuccessResultProps extends PlayedResultPayload {
 
 export interface PassedRoundsInfoProps extends Pick<PlayedResultPayload, 'passedRounds'> {
 }
-export interface ContinuedResultProps extends PassedRoundsInfoProps {
+export interface ContinuedResultProps extends PassedRoundsInfoProps, PlayedResultPayload {
   isContinuedFailed?: boolean
   isConfirmed: boolean
   onContinue: Callback
@@ -35,7 +35,7 @@ export interface GameoverResultProps extends Omit<ContinuedResultProps, 'onConti
   
 }
 
-export interface PlayedResultProps extends Omit<ContinuedResultProps, 'passedRounds'> {
+export interface PlayedResultProps extends Omit<ContinuedResultProps, keyof PlayedResultPayload> {
   resultPayload?: PlayedResultPayload
   isResultOpen: boolean
   onCloseResult: Callback

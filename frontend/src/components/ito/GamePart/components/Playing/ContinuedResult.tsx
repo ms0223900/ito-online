@@ -4,14 +4,21 @@ import PassedRoundsInfo from './PassedRoundsInfo';
 import { ContinuedResultProps } from './types';
 import CTAButton from 'components/ito/Common/components/CTAButton';
 import IntlFormattedMessage from 'components/ito/Common/components/intl/IntlFormattedMessage';
+import { getOperator } from './FailSuccessResult';
 
 const ContinuedResult = (props: ContinuedResultProps) => {
   const {
+    nextCardNumber,
+    prevCardNumber,
+    resultType,
     isContinuedFailed,
   } = props;
   
   return (
     <Box>
+      <Typography variant={'h5'} align={'center'}>
+        {`${nextCardNumber}`}
+      </Typography>
       <PassedRoundsInfo {...props} />
       {isContinuedFailed && (
         <IntlFormattedMessage

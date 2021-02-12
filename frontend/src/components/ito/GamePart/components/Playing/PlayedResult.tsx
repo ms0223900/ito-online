@@ -30,6 +30,7 @@ export const getModalResult = (props: PlayedResultProps) => {
         return (
           <ContinuedResult 
             {...props}
+            {...resultPayload}
             isContinuedFailed={resultPayload.resultType === 'CONTINUED_FAILED'}
             passedRounds={resultPayload.passedRounds}
           />
@@ -38,6 +39,7 @@ export const getModalResult = (props: PlayedResultProps) => {
         return (
           <GameoverResult 
             {...props} 
+            {...resultPayload}
             passedRounds={resultPayload.passedRounds}
           />
         );

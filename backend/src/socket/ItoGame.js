@@ -25,17 +25,13 @@ class ItoGame {
   }) {
     this.minPlayersAmount = minPlayersAmount;
     this.initLife = initLife;
-    this.passedRounds = 0;
-    this.init();
+    this.initUsers();
+    this.initBeforeStart();
     this.cards = this.makeRandomCards(cardAmount);
-    this.allQuestions = []; // 全部的問題
-    this.playingQuestions = []; // 遊玩中的問題，會越來越少
   }
 
-  init() {
+  initUsers() {
     this.users = [];
-    this.life = this.initLife;
-    this.latestCard = Infinity; // 第一張卡一定沒問題
   }
   initBeforeStart() {
     this.users = this.users.map(u => ({
@@ -43,7 +39,10 @@ class ItoGame {
       isReady: false,
       isCardPlayed: false,
     }));
+    this.passedRounds = 0;
     this.life = this.initLife;
+    this.allQuestions = []; // 全部的問題
+    this.playingQuestions = []; // 遊玩中的問題，會越來越少
     this.latestCard = Infinity; // 第一張卡一定沒問題
   }
 

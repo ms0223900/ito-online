@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const getOperator = (resultType: PlayedResultType) => (
+export const getOperator = (resultType: PlayedResultType) => (
   resultType === 'SUCCESS' ? ' < ' : ' > '
 );
 
